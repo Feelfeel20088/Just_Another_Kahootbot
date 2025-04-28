@@ -1,5 +1,8 @@
 # Just Another Kahoot Bot
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Feelfeel20088/Just_Another_Kahootbot)
+
+
 Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot designed for deployment on Kubernetes. And even better, it's not a shitty one that uses Selenium – it uses raw WebSockets, which improve reliability and performance. It can be easily connected to a web interface for control.
 
 ## Keywords
