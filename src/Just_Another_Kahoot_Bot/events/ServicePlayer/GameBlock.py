@@ -1,6 +1,6 @@
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, model_validator, Field
 from .bases import ServicePlayer, Ext
-from typing import List, Optional
+from typing import List, Optional, Union
 import orjson
 
 
@@ -31,11 +31,12 @@ class Content(BaseModel):
     timeAvailable: int
     numberOfAnswersAllowed: int
     currentQuestionAnswerCount: int
-    video: Optional[Video] = None
-    image: Optional[str] = None
-    imageMetadata: Optional[ImageMetadata] = None
-    media: Optional[List[Optional[str]]] = None
+    video: Video
+    image: str
+    imageMetadata: ImageMetadata
+    media: list  # Media might be empty or have null entries
 
+   
 
 class Data(BaseModel):
     gameid: str
@@ -59,7 +60,9 @@ class GameBlock(ServicePlayer):
             except orjson.JSONDecodeError:
                 raise ValueError(f"Failed to parse content as JSON: {content}")
         return values
-    
 
     async def handle(self, instance):
-        await instance.answerQuestion(self.data.content.numberOfAnswersAllowed, self.data.content.type)
+        await instance.answerQuestion(
+            self.data.content.numberOfAnswersAllowed,
+            self.data.content.type
+        )

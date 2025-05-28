@@ -31,7 +31,8 @@ class KahootBot:
         self.sendHartebeat = True
         self.childTasks = []
 
-    def startBot(self):
+    def startBot(self) -> None:
+        """Starts a bot in a task"""
         return asyncio.create_task(self.connect())
 
     # async def watchDog(self):
@@ -108,7 +109,7 @@ class KahootBot:
             return
             
 
-    async def initialize_connection(self):
+    async def initialize_connection(self) -> None:
         """Handles initial WebSocket handshakes."""
         await self.wsocket.send(Payloads.__connect__())
         response = orjson.loads(await self.wsocket.recv())
@@ -122,25 +123,25 @@ class KahootBot:
         await self.wsocket.send(self.payloads.__keepInGame__())
         await self.wsocket.send(self.payloads.__metaConnect__())
 
-    async def receiveMessages(self):
+    async def receiveMessages(self) -> None:
         """Receives and logs messages from the WebSocket."""
         try: 
             async for message in self.wsocket:
                 try:
                     await compare_models_to_ingress_json(message, self)
-                except SwarmHandler as e:
-                    await self.errorHandler.put((self, e))
                 except FatalError as e:
                     logger.debug(f"Caught Swarm Fatel exception: {e}")
+                except SwarmHandler as e:
+                    await self.errorHandler.put((self, e))
+                
 
-                    # error is in queue. pass for swarm to close cleanly 
         
         except asyncio.CancelledError:
             return
 
         
 
-    async def heartBeat(self):
+    async def heartBeat(self) -> None:
         """Sends periodic heartbeat messages to keep the connection alive."""
         try:
             while True:
@@ -152,15 +153,15 @@ class KahootBot:
         except asyncio.CancelledError:
             return
         
-    async def standAloneHeartBeat(self):
+    async def standAloneHeartBeat(self) -> None:
         self.id += 1
         self.ack += 1
         await self.wsocket.send(self.payloads.__heartBeat__(self.id, self.ack))
         logger.debug(f"Sent standalone heartbeat")
 
-    # known choices: 
-    # drop_pin
-    async def answerQuestion(self, amount_of_choices, type):
+    # TODO we have to handle more types here 
+    
+    async def answerQuestion(self, amount_of_choices: int, type: str) -> None:
         """Handles answering Kahoot questions."""
         await self.standAloneHeartBeat()
         t = time.time()
@@ -170,7 +171,7 @@ class KahootBot:
         t = t - time.time()
         logger.info(f"bot {self.nickname} sent answer in time {t}, choice: {choice} type of question: {type} ")
 
-    async def crasher(self): 
+    async def crasher(self) -> None: 
         try:
             while True:
                 logger.debug(self.payloads.__crash__(self.id))
@@ -179,7 +180,7 @@ class KahootBot:
         except asyncio.CancelledError:
             return
 
-    async def cleanUp(self):
+    async def cleanUp(self) -> None:
         for task in self.childTasks:
             if not task.done():  # Only cancel tasks that are still running
                 task.cancel()

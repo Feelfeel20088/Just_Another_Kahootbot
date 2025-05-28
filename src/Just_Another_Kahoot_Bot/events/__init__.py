@@ -141,20 +141,24 @@ async def compare_models_to_ingress_json(json: str, instance):
     for model, model_keys in event_classes[channel].items():
         
         json_keys = set(convert_ingress_json_keys_to_list(json))
-    
-        # print("model keys: \n", model_keys, "\n json keys: \n", json_keys)
+        
+        # print("model keys: \n", model_keys, "\n json keys: \n", json_keys, "\n\n\n\n\n")
         if model_keys == json_keys:
             event = model.model_validate(json)
             debug_class_use_times[type(event)] += 1  
             await event.handle(instance)
             return
         
-    
-    raise UnknownJsonModelException(
+    logger.error(
         f"No suitable model to parse the provided JSON: {json}. "
         "If you're seeing this error, you might want to create an issue on GitHub "
         "or, even better, fix it yourself and submit a merge."
     )
+    # raise UnknownJsonModelException(
+    #     f"No suitable model to parse the provided JSON: {json}. "
+    #     "If you're seeing this error, you might want to create an issue on GitHub "
+    #     "or, even better, fix it yourself and submit a merge."
+    # )
 
     
 
