@@ -15,7 +15,7 @@ def runChallenge(challenge_code: str, token) -> str:
     Returns:
         str: The XOR-ed result of the challenge output and the token.
     """
-
+    # yes i know this is a peice of shit dont judge
     challenge_code = 'console.log(' + challenge_code[:121] + ')' + challenge_code[121:]
     challenge_code = re.sub(r'this', 'a', challenge_code)
 
