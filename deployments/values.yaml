@@ -16,12 +16,12 @@ image:
 containerPort: 8000
 
 # Single-threaded: so only needs 1 cpu
-# I'm not too sure about memory limits, but I've never had issues with 8Gi.
+# I'm not too sure about memory limits, but I've never had issues with 500mi.
 # Feel free to experiment with the memory and open an issue if you got problems 
-# with 8Gi or you think 8Gi is to much.
+# with 500mi or you think 500mi is to much.
 resources:
   limits:
-    memory: "8Gi"
+    memory: "500mi"
     cpu: "1"
 
 # put whatever you want for your pod port
