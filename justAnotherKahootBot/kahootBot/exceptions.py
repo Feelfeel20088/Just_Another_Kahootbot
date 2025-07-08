@@ -1,6 +1,6 @@
 
 import asyncio
-from ...config.logger import logger
+from justAnotherKahootBot.config.logger import logger
 class SwarmHandler(Exception):
     async def handle(self, instance, task: asyncio.Task, swarm):
         raise NotImplementedError(f"handle is not implemented for {self.__class__.__name__}!")

@@ -6,10 +6,10 @@ import uuid
 import time
 from .payloads import Payloads
 from .exceptions import *
-from ..challenge.runchallenge import runChallenge
+from justAnotherKahootBot.challenge.runchallenge import runChallenge
 from .exceptions import SwarmHandler
-from ...config.logger import logger
-from ..events import compare_models_to_ingress_json
+from justAnotherKahootBot.config.logger import logger
+from justAnotherKahootBot.events import compare_models_to_ingress_json
 import orjson
 
 

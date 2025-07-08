@@ -4,13 +4,15 @@ from typing import List
 import traceback
 from .kahootBot import KahootBot
 import secrets
-from ...config.logger import logger
+from justAnotherKahootBot.config.logger import logger
 from .exceptions import FatalError, SwarmHandler
+from justAnotherKahootBot.api.context import Context
 
 
 class Swarm:
     def __init__(self):
         """Initialize the swarm object."""
+        self.context: Context = None
         self.ttl = None
         self.start_time = time()
         self.tasks: List[asyncio.Task] = []
@@ -92,6 +94,7 @@ class Swarm:
             await self.watchdog 
             self.tasks.clear()
             self.instancetotask.clear()
+            self.context.remove_swarm(self)
         except Exception as e:
             logger.exception("Failed during cleanup")
 
@@ -110,9 +113,10 @@ class Swarm:
             except Exception as e:
                 print("default exception caught in swarm:", e)
 
-    async def start(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int):
+    async def start(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int, context: Context):
         """Start the swarm in an async event loop with TTL check."""
         try:
+            self.context = context
             self.gameid = gameid
             self.nickname = nickname
             self.crash = crash
@@ -146,7 +150,7 @@ class Swarm:
 
 
     # Task starter for the /swarm endpoint wrapped in a new task as we dont want the endpoint to live for the entire duration of the swarm.
-    def createSwarm(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int):
+    def createSwarm(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int, context: Context):
         """Create a new swarm task and run it asynchronously."""
         logger.info(f"New swarm creation started. Amount: {amount}, TTL: {ttl}, nickname: {nickname}")
-        asyncio.create_task(self.start(gameid, nickname, crash, amount, ttl))
+        asyncio.create_task(self.start(gameid, nickname, crash, amount, ttl, Context))

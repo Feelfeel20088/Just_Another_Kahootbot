@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from .bases import ServiceStatus, Ext
-from ...Kahoot_Bot.exceptions import HostDisconnectError
-from ....config.logger import logger
+from justAnotherKahootBot.kahootBot.exceptions import HostDisconnectError
+from justAnotherKahootBot.config.logger import logger
 
 
 class Data(BaseModel):

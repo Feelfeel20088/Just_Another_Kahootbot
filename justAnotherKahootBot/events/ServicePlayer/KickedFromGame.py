@@ -1,8 +1,8 @@
 from pydantic import BaseModel, model_validator
 from .bases import ServicePlayer, Ext
 import orjson
-from ...Kahoot_Bot.exceptions import KickedFromGameError, TooManyPlayersError
-from ....config.logger import logger
+from justAnotherKahootBot.kahootBot.exceptions import KickedFromGameError, TooManyPlayersError
+from justAnotherKahootBot.config.logger import logger
 
 class Content(BaseModel):
     kickCode: int

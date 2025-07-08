@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from .bases import ServiceController, Ext
-from ...Kahoot_Bot.exceptions import SessionNotFoundError
-from ....config.logger import logger
+from justAnotherKahootBot.kahootBot.exceptions import SessionNotFoundError
+from justAnotherKahootBot.config.logger import logger
 
 class Data(BaseModel):
     description: str

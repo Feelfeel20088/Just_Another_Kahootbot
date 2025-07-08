@@ -4,9 +4,9 @@ from pydantic import BaseModel
 from typing import Dict, List, Tuple, Type, Set
 from .bases import Event
 import orjson
-from ..Kahoot_Bot.exceptions import UnknownJsonModelException
+from justAnotherKahootBot.kahootBot.exceptions import UnknownJsonModelException
 from collections import defaultdict
-from ...config.logger import logger
+from justAnotherKahootBot.config.logger import logger
 
 
 # ------------------------------------------------
@@ -20,11 +20,11 @@ from ...config.logger import logger
 # 
 # The primary goal of this script is to parse and handle Kahoot's event responses 
 # and map them to the correct internal models, a task that would have been much 
-# simpler with proper event identification from Kahoot. Also the responses dont even make any fucking sense for example i have a 
+# simpler with proper event identification from Kahoot.
 # 
 # If you're wondering why this exists, now you know.
 # ------------------------------------------------
-
+# TODO mabye use hashes instead with this. idk 
 
 # Recursive function to get keys from JSON and fix kahoots json string inside json
 def convert_ingress_json_keys_to_list(d: dict) -> List[str]:
@@ -90,44 +90,45 @@ def convert_basemodel_keys_to_list(model: BaseModel) -> List[str]:
 
 event_classes: Dict[str, Dict[Type[BaseModel], Set[str]]] = defaultdict(dict)
 
+def init_events():
 
-events_dir = os.path.dirname(__file__) 
+    events_dir = os.path.dirname(__file__) 
 
-for root, _, files in os.walk(events_dir):
+    for root, _, files in os.walk(events_dir):
 
-    for filename in files:
+        for filename in files:
 
-        if filename.endswith(".py") and filename != "__init__.py" and filename != "bases.py":
-            file_location = os.path.relpath(os.path.join(root, filename), events_dir).replace("/", ".")
-            module_location = f".{file_location[:-3]}"  
-            
-
-            module = importlib.import_module(module_location, package=__name__)
-
-            for attr_name in dir(module):
+            if filename.endswith(".py") and filename != "__init__.py" and filename != "bases.py":
+                file_location = os.path.relpath(os.path.join(root, filename), events_dir).replace("/", ".")
+                module_location = f".{file_location[:-3]}"  
                 
-                
-                attr = getattr(module, attr_name)
-                # TODO MAKE COMMONT HERE
-                if (
-                    isinstance(attr, type) 
-                    and issubclass(attr, BaseModel) 
-                    and issubclass(attr, Event) 
-                    and attr not in (BaseModel, Event)
-                    and Event not in attr.__bases__
-                ):
-                    logger.debug(f"Loading event class {attr} into the map.")
-                    if not "channel" in attr.model_fields:
-                        logger.warning(f"warning: class {attr} does not have a channel type... skiping")
-                        continue
-                
-                    module_channel = attr.model_fields["channel"].default
 
-                    event_classes[module_channel][attr] = set(convert_basemodel_keys_to_list(attr))
+                module = importlib.import_module(module_location, package=__name__)
+
+                for attr_name in dir(module):
                     
-                   
-            
+                    
+                    attr = getattr(module, attr_name)
+                    # TODO MAKE COMMONT HERE
+                    if (
+                        isinstance(attr, type) 
+                        and issubclass(attr, BaseModel) 
+                        and issubclass(attr, Event) 
+                        and attr not in (BaseModel, Event)
+                        and Event not in attr.__bases__
+                    ):
+                        logger.debug(f"Loading event class {attr} into the map.")
+                        if not "channel" in attr.model_fields:
+                            logger.warning(f"warning: class {attr} does not have a channel type... skiping")
+                            continue
+                    
+                        module_channel = attr.model_fields["channel"].default
+
+                        event_classes[module_channel][attr] = set(convert_basemodel_keys_to_list(attr))
+                        
+                    
                 
+                    
 
 
 debug_class_use_times: Dict[Type[BaseModel], int] = defaultdict(int)
