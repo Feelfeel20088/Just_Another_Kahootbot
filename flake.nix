@@ -54,7 +54,7 @@
         devShells.default = pkgs.mkShell {
           buildInputs = [
             pkgs.python313
-            pkgs.python313Packages.requests
+            pkgs.python313Packages.httpx
             pkgs.python313Packages.websockets
             pkgs.python313Packages.quart
             pkgs.python313Packages.pydantic

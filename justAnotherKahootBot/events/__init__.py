@@ -137,6 +137,8 @@ async def compare_models_to_ingress_json(json: str, instance):
     # this lowers the time conplexity (o(n) - seperating the channles into diffrent lists)
     json = orjson.loads(json)
     json = json[0] # kahoot wraps json in a list
+
+    # logger.debug(json)
     
     channel = json["channel"]
     for model, model_keys in event_classes[channel].items():

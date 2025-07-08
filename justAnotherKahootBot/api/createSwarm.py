@@ -6,9 +6,9 @@ from .context import Context
 
 context = Context()
 
-@app.route('/swarm', methods=['POST'])
-async def swarm():
-    """starts a swarm"""
+@app.route('/swarm/createSwarm', methods=['POST'])
+async def createSwarm():
+    """Creates a swarm"""
     # if the ints are strings there will be no crashes as we convert at createTask()
     data = await request.json
     amount = data.get('amount') # int
@@ -27,11 +27,10 @@ async def swarm():
     
     # Create and start the swarm
     swarm = Swarm()
-    context.add_swarm(swarm)
-    swarm.createSwarm(int(gamepin), nickname, crash, amount, ttl, context) # context will return instead of waiting
+    swarm.createSwarm(int(gamepin), nickname, crash, amount, ttl) # context will return instead of waiting
     
 
 
 
-    return jsonify({"message": "Swarm created and tasks started"}), 200
+    return jsonify({"message": "Swarm created and tasks started", "swarmid": swarm.getSwarmId()}), 200
 

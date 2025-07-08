@@ -6,7 +6,7 @@ from .context import Context
 
 context = Context()
 
-@app.get("/status")
+@app.get("/swarm/status")
 async def status():
     """Returns the status of all active swarms. also will clean up dead swarms."""
     swarm_info = []

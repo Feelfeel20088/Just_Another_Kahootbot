@@ -49,7 +49,7 @@ Not really recommended for production use, but it could work for testing or deve
 
 ### Step 1 (for all options): Clone the Repository
 ```bash
-git clone https://github.com/Feelfeel20088/Just_Another_Kahootbot.git --branch main
+git clone https://github.com/Feelfeel20088/Just_Another_Kahootbot.git --branch master
 cd Just_Another_Kahootbot
 ```
 
@@ -99,7 +99,6 @@ You can deploy however you want if u want to create a deployment.yaml, run it on
 #### step 1: Run the program. 
 Go to the parent dir of the bot and run the program like this: 
 ```bash
-cd ../
 python -m Just_Another_Kahoot_Bot # or what ever you cloned the bot as
 ```
 

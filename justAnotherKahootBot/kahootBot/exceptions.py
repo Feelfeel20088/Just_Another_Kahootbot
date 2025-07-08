@@ -38,4 +38,6 @@ class GameEndedError(FatalError):
 
 class UnknownJsonModelException(FatalError):
     pass
-        
+
+class TaskCrash(FatalError):
+    pass

@@ -1,4 +1,4 @@
-import requests
+import httpx
 import asyncio
 import websockets
 import random
@@ -30,6 +30,7 @@ class KahootBot:
         self.errorHandler = queue
         self.sendHartebeat = True
         self.childTasks = []
+        self.timeout = 10.0 
 
     def startBot(self) -> None:
         """Starts a bot in a task"""
@@ -57,9 +58,11 @@ class KahootBot:
     #     finally:
     #         await self.cleanUp()
 
+
     async def connect(self):
         """Handles connecting to the Kahoot WebSocket server."""
-    
+
+        
         cookies = {
             "generated_uuid": str(uuid.uuid4()),
             "player": "active"
@@ -68,46 +71,65 @@ class KahootBot:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0"
         }
 
-        response = requests.get(
-            f'https://kahoot.it/reserve/session/{self.gameid}/?{time.time()}',
-            headers=headers,
-            cookies=cookies
-        )
-        response.raise_for_status()
-            
-            
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(
+                    f'https://kahoot.it/reserve/session/{self.gameid}/?{time.time()}',
+                    headers=headers,
+                    cookies=cookies,
+                    timeout=self.timeout
+                )
+                response.raise_for_status()
+                
+                try:
+                    json_data = orjson.loads(response.content)
+                except orjson.JSONDecodeError as e:
+                    logger.error(f"Failed to parse JSON response: {e}")
+                    raise
+                session_token = response.headers.get('x-kahoot-session-token')
+                if not session_token:
+                    logger.error("Missing 'x-kahoot-session-token' header in response")
+                    raise
 
-        
-        challenge_response = runChallenge(response.json()['challenge'], response.headers['x-kahoot-session-token'])
-        
+                challenge_response = runChallenge(json_data['challenge'], session_token)
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.reason_phrase}")
+            raise
+        except httpx.RequestError as e:
+            logger.error(f"Request error occurred: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error: {e}")
+            raise
+
         logger.info(f"WebSocket URL: wss://kahoot.it/cometd/{self.gameid}/{challenge_response}")
+        logger.info("Connecting to WebSocket...")
 
-        logger.info(f"Connecting to WebSocket...")
-    
         self.wsocket = await websockets.connect(
             f'wss://kahoot.it/cometd/{self.gameid}/{challenge_response}',
-            ping_interval=30, 
+            ping_interval=30,
             ping_timeout=60,
-            open_timeout=30
+            open_timeout=10
         )
-        logger.info(f"Connected!")
+
+        logger.info("Connected!")
+
         await self.initialize_connection()
         self.childTasks.append(asyncio.create_task(self.heartBeat()))
         self.childTasks.append(asyncio.create_task(self.receiveMessages()))
-                
+
         if self.crash:
             self.childTasks.append(asyncio.create_task(self.crasher()))
-        
-        try: 
 
+        try:
             while True:
                 await asyncio.sleep(3)
 
         except asyncio.CancelledError:
             await self.cleanUp()
-            logger.debug("bot has been cleaned up bot side")
-            return
-            
+            logger.debug("Bot has been cleaned up bot side")
+        
 
     async def initialize_connection(self) -> None:
         """Handles initial WebSocket handshakes."""
