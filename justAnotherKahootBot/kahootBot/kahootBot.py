@@ -5,6 +5,8 @@ import random
 import uuid
 import time
 from .payloads import Payloads
+from .clientInfo import ClientInfo
+from .answer import Answer
 from .exceptions import *
 from justAnotherKahootBot.challenge.runchallenge import runChallenge
 from .exceptions import SwarmHandler
@@ -21,14 +23,12 @@ import orjson
 class KahootBot:
 
     def __init__(self, gameid: int, nickname: str, crash: bool, queue: asyncio.Queue):
-        self.gameid = gameid
-        self.nickname = nickname
+        self.clientInfo = ClientInfo()
+        self.clientInfo.set_gameid(gameid)
+        self.clientInfo.set_nickname(nickname)
         self.crash = crash
-        self.ack = 2
-        self.id = 6
         self.wsocket = None
         self.errorHandler = queue
-        self.sendHartebeat = True
         self.childTasks = []
         self.timeout = 10.0 
 
@@ -63,6 +63,7 @@ class KahootBot:
         """Handles connecting to the Kahoot WebSocket server."""
 
         
+        
         cookies = {
             "generated_uuid": str(uuid.uuid4()),
             "player": "active"
@@ -74,7 +75,7 @@ class KahootBot:
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
-                    f'https://kahoot.it/reserve/session/{self.gameid}/?{time.time()}',
+                    f'https://kahoot.it/reserve/session/{self.clientInfo.get_gameid()}/?{time.time()}',
                     headers=headers,
                     cookies=cookies,
                     timeout=self.timeout
@@ -103,15 +104,16 @@ class KahootBot:
             logger.error(f"Unexpected error: {e}")
             raise
 
-        logger.info(f"WebSocket URL: wss://kahoot.it/cometd/{self.gameid}/{challenge_response}")
+        logger.info(f"WebSocket URL: wss://kahoot.it/cometd/{self.clientInfo.get_gameid()}/{challenge_response}")
         logger.info("Connecting to WebSocket...")
 
         self.wsocket = await websockets.connect(
-            f'wss://kahoot.it/cometd/{self.gameid}/{challenge_response}',
+            f'wss://kahoot.it/cometd/{self.clientInfo.get_gameid()}/{challenge_response}',
             ping_interval=30,
             ping_timeout=60,
-            open_timeout=10
+            open_timeout=30
         )
+        self.wsocket
 
         logger.info("Connected!")
 
@@ -136,12 +138,15 @@ class KahootBot:
         await self.wsocket.send(Payloads.__connect__())
         response = orjson.loads(await self.wsocket.recv())
         client_id = response[0]["clientId"]
-        self.payloads = Payloads(self.gameid, client_id)
+
+        self.clientInfo.set_clientid(client_id)
+
+        self.payloads = Payloads(self.clientInfo.get_gameid(), client_id)
 
         # Send authentication messages
         await self.wsocket.send(self.payloads.__clientId__())
         await self.wsocket.send(self.payloads.__clientId2__())
-        await self.wsocket.send(self.payloads.__connectID__(self.nickname))
+        await self.wsocket.send(self.payloads.__connectID__(self.clientInfo.get_nickname()))
         await self.wsocket.send(self.payloads.__keepInGame__())
         await self.wsocket.send(self.payloads.__metaConnect__())
 
@@ -155,22 +160,22 @@ class KahootBot:
                     logger.debug(f"Caught Swarm Fatel exception: {e}")
                 except SwarmHandler as e:
                     await self.errorHandler.put((self, e))
+                except Exception as e:
+                    logger.exception("found exception in model hander")
                 
 
         
         except asyncio.CancelledError:
             return
 
+    
         
 
     async def heartBeat(self) -> None:
         """Sends periodic heartbeat messages to keep the connection alive."""
         try:
             while True:
-                if self.sendHartebeat:
-                    self.id += 1
-                    self.ack += 1
-                    await self.wsocket.send(self.payloads.__heartBeat__(self.id, self.ack))
+                await self.wsocket.send(self.payloads.__heartBeat__(self.clientInfo.get_id(), self.clientInfo.get_ack()))
                 await asyncio.sleep(5)
         except asyncio.CancelledError:
             return
@@ -178,20 +183,7 @@ class KahootBot:
     async def standAloneHeartBeat(self) -> None:
         self.id += 1
         self.ack += 1
-        await self.wsocket.send(self.payloads.__heartBeat__(self.id, self.ack))
-        logger.debug(f"Sent standalone heartbeat")
-
-    # TODO we have to handle more types here 
-    
-    async def answerQuestion(self, amount_of_choices: int, type: str) -> None:
-        """Handles answering Kahoot questions."""
-        await self.standAloneHeartBeat()
-        t = time.time()
-        self.id += 1
-        choice = random.randint(0, amount_of_choices - 1)
-        await self.wsocket.send(self.payloads.__answerQuestion__(self.id, choice, type))
-        t = t - time.time()
-        logger.info(f"bot {self.nickname} sent answer in time {t}, choice: {choice} type of question: {type} ")
+        await self.wsocket.send(self.payloads.__heartBeat__(self.clientInfo.get_id(), self.clientInfo.get_ack()))
 
     async def crasher(self) -> None: 
         try:
@@ -207,8 +199,8 @@ class KahootBot:
             if not task.done():  # Only cancel tasks that are still running
                 task.cancel()
                 try:
-                    logger.debug(f"Cleaning up tasks in bot {self.nickname}")
-                    await task  # Ensure graceful cancellation
+                    logger.debug(f"Cleaning up tasks in bot {self.clientInfo.get_nickname()}")
+                    await task  # Ensure graceful cancellation 
                 except Exception as e:
                     logger.error(f"Error during cleanup: {e}")  # Handle other unexpected errors
 
@@ -217,4 +209,4 @@ class KahootBot:
         if self.wsocket:
             await self.wsocket.close()
 
-        logger.info(f"Cleanup completed, tasks canceled, WebSocket closed.")
+        logger.debug(f"Cleanup completed, tasks canceled, WebSocket closed.")

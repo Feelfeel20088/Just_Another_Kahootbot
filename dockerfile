@@ -3,7 +3,7 @@ FROM archlinux:latest
 
 LABEL maintainer="feelfeel200088@gmail.com"
 
-WORKDIR /app
+WORKDIR /app/Just_Another_Kahoot_Bot
 
 # Install system dependencies including Rust
 RUN pacman -Syu --noconfirm && \
@@ -22,14 +22,11 @@ RUN pacman -Syu --noconfirm && \
 COPY . /app/Just_Another_Kahoot_Bot
 
 # Install Python dependencies (orjson will now work since Rust is installed)
-RUN pip install --no-cache-dir --break-system-packages -r Just_Another_Kahoot_Bot/requirements.txt
+RUN pip install --no-cache-dir --break-system-packages -r ./requirements.txt
 
 
 # Expose the application port
 EXPOSE 8000
 
-# Set Python path to your app
-ENV PYTHONPATH="/app/Just_Another_Kahoot_Bot"
-
 # Run the app
-CMD ["python", "-m", "Just_Another_Kahoot_Bot"]
+CMD ["python", "-m", "justAnotherKahootBot"]

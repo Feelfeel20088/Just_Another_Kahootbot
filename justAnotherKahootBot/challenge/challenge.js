@@ -15,4 +15,4 @@ var a = {
             return false;
         }
     }
-};console.log(decode.call(a, 'teH0PNxoA7RV5pws6rw4YVI5ptVCmNGXsXRTas0xd9S4k3kd80ywqtkvzSMcocjkAGtCk8uoo08DaDMZH2jjLqnN5qzZACNvW7Br')); function decode(message) {var offset = (((39+   41)+   69) *   ((64+   64)+   59)); if( 	 a . 	 angular .isString	 ( offset	 )) console .log ("Offset derived as: {", offset, "}"); return  	 _	 .   replace ( message,/./g, function(char, position) {return String.fromCharCode((((char.charCodeAt(0)*position)+ offset ) % 77) + 48);});}
+};console.log(decode.call(a, 'rhb1pEIIrz4Bvx4RNlVPdLM8I7VQjaPs7tGlByc2J1erBztNslMoMBmX4LNWVBTHu1OPYHShEMRYWoBu324RhFI6HrgElpGpqm60')); function decode(message) {var offset = (59 + 5)	 *   (95 + 91)	 *   5; if(   a .angular .   isArray 	 ( offset )) 	 console 	 . log 	 ("Offset derived as: {", offset, "}"); return  _. replace 	 ( message,/./g, function(char, position) {return String.fromCharCode((((char.charCodeAt(0)*position)+ offset ) % 77) + 48);});}

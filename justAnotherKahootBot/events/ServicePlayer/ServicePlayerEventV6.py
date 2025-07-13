@@ -1,32 +1,18 @@
 from pydantic import BaseModel, model_validator
-from typing import List, Optional, Any
+from typing import Optional, Dict
 from .bases import ServicePlayer, Ext
 import orjson
 
-class AvailableCollaborations(BaseModel):
-    isAutoAssign: bool
-    canRename: bool
-    data: List[Any]
-    collaborationNameLocale: str
 
 class Content(BaseModel):
-    data: dict
-    stableIdentifier: str
-    isHighContrast: bool
-    teamMembers: List
-    loginState: int
-    didControllerLeave: bool
-    avatarTimestamp: Optional[int] = None
-    wasControllerKicked: bool
-    state: int
-    availableCollaborations: AvailableCollaborations
-    chosenCollaborationIndex: int
-    kahootLangIsRTL: bool
-    canChangeAvatar: bool
-    youtubeAPIKey: str
-    userReactionsEnabled: bool
-    islandData: Optional[dict] = None
-    audienceQuestionsData: Optional[dict] = None
+    playerName: str
+    hostPrimaryUsage: str
+    hostPrimaryUsageType: str
+    hostIsPublisher: bool
+    enableBasicPostGameSignupFlow: bool
+    trainingContentId: str
+    iosLiveActivityId: str
+
 
 class Data(BaseModel):
     gameid: str
@@ -36,11 +22,12 @@ class Data(BaseModel):
     content: Content
     cid: str
 
-class ServicePlayerEventV4(ServicePlayer):
+
+class ServicePlayerEventV6(ServicePlayer):
     ext: Ext
     data: Data
     channel: str = "/service/player"
-    
+
     @model_validator(mode='before')
     def check_required_fields(cls, values: dict) -> dict:
         content = values.get('data', {}).get('content', None)
@@ -54,4 +41,3 @@ class ServicePlayerEventV4(ServicePlayer):
     
     async def handle(self, instance):
         pass
-

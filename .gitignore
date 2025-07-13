@@ -9,6 +9,7 @@
 
 # nix
 ./result
+./justAnotherKahootBot/config/app.log
 
 
 

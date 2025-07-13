@@ -15,7 +15,7 @@ class Swarm:
         """Initialize the swarm object."""
         self.id = uuid.uuid4()
         self.context: Context = Context()
-        self.context.addSwarm(self.id, self)
+        # self.context.addSwarm(self.id, self)
         self.ttl = None
         self.start_time = time()
         self.tasks: List[asyncio.Task] = []
@@ -79,7 +79,7 @@ class Swarm:
                     e = task.exception()
                     if e:
                         logger.debug(f"Cleanup found error in kahoot bot {index} in swarm {self.id}. Error: {e}")
-                        self.clean_execution = TaskCrash()
+                        self.clean_execution = TaskCrash(e)
                     continue
 
                 task.cancel()
@@ -91,7 +91,7 @@ class Swarm:
                         f"Swarm {self.id}'s Bot {index} did NOT shut down in {timeout}s. "
                         "The bot is not being tracked anymore and may be a zombie task."
                     )
-                    self.clean_execution = TaskCrash()
+                    self.clean_execution = TaskCrash("task timeout while waiting for it to be cancled")
 
                 except Exception as e:
                     logger.exception(f"Swarm {self.id}'s Bot {index} crashed during cleanup: {e}")
@@ -100,7 +100,7 @@ class Swarm:
             await self.watchdog 
             self.tasks.clear()
             self.instancetotask.clear()
-            self.context.removeSwarm(self.id)
+            # self.context.removeSwarm(self.id)
             
         except Exception as e:
             logger.exception(f"swarm {self.id} Failed during cleanup")
@@ -147,7 +147,7 @@ class Swarm:
             # Main loop to check if the swarm is still alive
             while self.isAlive() and not self.stop:
                 logger.info("time remaining: " + str(self.getTimeRemaining()) + "Amount of bots: " + str(len(self.tasks)))
-                await asyncio.sleep(5)
+                await asyncio.sleep(10)
 
             await self.cleanUp()
 
