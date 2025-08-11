@@ -4,5 +4,9 @@ setup(
     name="JustAnotherKahootBot",
     version="v0.2.0-alpha",
     packages=find_packages(), # Automatically find all packages in the project
-    
+    entry_points={
+        'console_scripts': [
+            'kahootbot = justAnotherKahootBot.__main__:main',
+        ],
+    },
 )

@@ -1,14 +1,10 @@
 {pkgs}:
 let 
-
-
-  JustAnotherKahootBot = (with pkgs; python313Packages.buildPythonApplication {
+  just_another_kahoot_bot = (with pkgs; python313Packages.buildPythonApplication {
     name = "JustAnotherKahootBot";
     version = "v0.2.0-alpha";
 
     src = ../.;
-
-    buildInputs = [ rustc ];
 
     propagatedBuildInputs = (with python313Packages; [
       httpx
@@ -30,7 +26,7 @@ let
     };
   });
 in {
-  inherit JustAnotherKahootBot;
+  inherit just_another_kahoot_bot;
 }
 
     # postInstall = ''
