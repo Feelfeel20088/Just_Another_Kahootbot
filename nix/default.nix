@@ -1,31 +1,39 @@
-{pkgs}: final: prev:
+{pkgs}:
 let 
-  felixhub = (with pkgs; buildNpmPackage {
-    pname = "felixhub-portfolio-site";
-    version = "1.0";
+
+
+  JustAnotherKahootBot = (with pkgs; python313Packages.buildPythonApplication {
+    name = "JustAnotherKahootBot";
+    version = "v0.2.0-alpha";
 
     src = ../.;
 
-    npmDepsHash = "sha256-ap2iD0tZnivycTiDLuFsCuGeXp+291DM/ljq3nh1to4=";
+    buildInputs = [ rustc ];
 
-    npmPackFlags = [ "--ignore-scripts" ];
+    propagatedBuildInputs = (with python313Packages; [
+      httpx
+      websockets
+      quart
+      pydantic
+      orjson
+    ]) ++ [
+      nodejs
+      yarn
+    ];
 
-    NODE_OPTIONS = "--openssl-legacy-provider";
-
-    buildInputs = [ typescript ];
-
-    postInstall = ''
-      mkdir -p $out/app
-      cp -r . $out/app/
-    '';
 
     meta = {
-      description = "Portfolio website for Felix";
-      homepage = "https://felixhub.dev";
+      description = "Just_Another_Kahoot_Bot is a highly scalable, single-threaded bot for Kahoot, built for deployment on Kubernetes. Unlike traditional bots that rely on Selenium, this bot uses raw WebSockets, providing better performance, stability, and reliability. The bot can flood Kahoot games, answer questions correctly, and remain stealthy.";
+      homepage = "https://github.com/Feelfeel20088/Just_Another_Kahootbot";
       license = lib.licenses.gpl3Only;
       maintainers = with lib.maintainers; [ felix ];
     };
   });
 in {
-  inherit felixhub;
+  inherit JustAnotherKahootBot;
 }
+
+    # postInstall = ''
+    #   mkdir -p $out/app
+    #   cp -r . $out/app/
+    # '';
