@@ -1,7 +1,7 @@
 {pkgs}:
 let 
-  just_another_kahoot_bot = (with pkgs; python313Packages.buildPythonApplication {
-    name = "JustAnotherKahootBot";
+  just_another_kahootbot = (with pkgs; python313Packages.buildPythonApplication {
+    name = "just_another_kahootbot";
     version = "v0.2.0-alpha";
 
     src = ../.;
@@ -12,10 +12,13 @@ let
       quart
       pydantic
       orjson
+    
     ]) ++ [
       nodejs
+      
       yarn
     ];
+    
 
 
     meta = {
@@ -26,7 +29,7 @@ let
     };
   });
 in {
-  inherit just_another_kahoot_bot;
+  inherit just_another_kahootbot;
 }
 
     # postInstall = ''

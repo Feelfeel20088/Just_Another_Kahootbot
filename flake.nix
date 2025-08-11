@@ -12,16 +12,16 @@
       systems = flake-utils.lib.defaultSystems;
 
       perSystem = { system, pkgs, ... }: let
-        just_another_kahoot_bot = (import ./nix/default.nix {
+        just_another_kahootbot = (import ./nix/default.nix {
           inherit pkgs;
-        }).just_another_kahoot_bot;
+        }).just_another_kahootbot;
         
       in {
         packages = {
-          default = just_another_kahoot_bot;
+          default = just_another_kahootbot;
 
           dockerImage = pkgs.dockerTools.buildImage {
-            name = "just_another_kahoot_bot";
+            name = "just_another_kahootbot";
             tag = "latest";
 
             # fromImage = pkgs.dockerTools.pullImage {
@@ -39,9 +39,9 @@
 
 
             copyToRoot = pkgs.buildEnv {
-              name = "just_another_kahoot_bot-docker-root";
+              name = "just_another_kahootbot-docker-root";
               paths = [
-                just_another_kahoot_bot
+                just_another_kahootbot
               ];
               pathsToLink = [ "/app" ];
             };
