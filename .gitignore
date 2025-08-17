@@ -7,9 +7,12 @@
 *.pyo
 *.pyd
 
+# Logs
+./justAnotherKahootBot/config/app.log
+
 # nix
 ./result
-./justAnotherKahootBot/config/app.log
+
 
 
 
