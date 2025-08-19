@@ -8,10 +8,10 @@
 *.pyd
 
 # Logs
-./justAnotherKahootBot/config/app.log
+/justAnotherKahootBot/config/app.log
 
 # nix
-./result
+/result
 
 
 
