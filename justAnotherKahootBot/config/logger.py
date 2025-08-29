@@ -11,9 +11,9 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
-log_dir = os.path.dirname(os.path.abspath(__file__))
-log_path = os.path.join(log_dir, 'app.log')
-
+logdir = "/tmp/just_another_kahootbot"
+log_path = os.path.join(logdir, 'app.log')
+os.mkdir(logdir)
 # FileHandler for logging to a file
 fh = logging.FileHandler(log_path, mode='w')  
 fh.setLevel(logging.DEBUG) 

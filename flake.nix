@@ -58,6 +58,9 @@
             pkgs.python313Packages.orjson
             pkgs.nodejs
             pkgs.yarn
+
+            # linter
+            pkgs.python313Packages.ruff
           ];
         };
       };
