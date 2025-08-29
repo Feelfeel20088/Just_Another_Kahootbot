@@ -37,7 +37,7 @@ jobs:
 
 
       - name: Tag Docker image
-        run: docker tag just_another_kahoot_bot:latest ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
+        run: docker tag just_another_kahoot_bot ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKERHUBPASS }}" | docker login -u "${{ secrets.DOCKERHUBUSER }}" --password-stdin
