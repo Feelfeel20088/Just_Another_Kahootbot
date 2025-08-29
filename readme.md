@@ -91,7 +91,7 @@ docker push <Your User/Gamertag>/just_another_kahootbot
 ```
 
 #### Step 2: Deploy.
-You can deploy however you want if u want to create a deployment.yaml, run it on compose, or just run it on a docker cluster thats up to u. if you need insterpation check out the helms chat templetes
+You can deploy however you want if u want to create a deployment.yaml, run it on compose, or just run it on a docker cluster thats up to u. if you need insterpation check out the helms chat templetess
 
 
 ### Option 3 Steps: 
