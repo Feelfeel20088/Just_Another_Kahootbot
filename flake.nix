@@ -41,7 +41,12 @@
             copyToRoot = pkgs.buildEnv {
               name = "just_another_kahootbot-docker-root";
               paths = [
-                just_another_kahootbot
+                pkgs.python313Full      
+                pkgs.gcc                 
+                pkgs.pkg-config
+                pkgs.zlib
+                pkgs.openssl
+                just_another_kahootbot    
               ];
               pathsToLink = [ "/app" ];
             };
