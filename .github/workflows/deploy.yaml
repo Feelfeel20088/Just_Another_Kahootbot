@@ -22,9 +22,12 @@ jobs:
 
       - name: Build nix image
         run: nix --extra-experimental-features 'flakes nix-command' build .#dockerImage
-
+      
       - name: Load nix image
         run: docker load < result
+
+      - name: test
+        run: docker images
 
       - name: Set Docker tag
         id: docker_tag
