@@ -33,7 +33,7 @@
             # };
 
             config = {
-              Cmd = ["python3.13" "-m" "justAnotherKahootBot"];
+              Cmd = ["python" "-m" "justAnotherKahootBot"];
               WorkingDir = "/app";
             };
 
