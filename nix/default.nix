@@ -21,7 +21,7 @@ let
     
     postInstall = ''
       mkdir -p $out/app
-      cp -r justAnotherKahootBot $out/app/
+      cp -r . $out/app/
       
     '';
 # rm -rf $out/justAnotherKahootBot
