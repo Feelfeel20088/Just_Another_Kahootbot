@@ -14,6 +14,7 @@ let
       orjson
     
     ]) ++ [
+      python313
       nodejs_24
       rustc
     ];
