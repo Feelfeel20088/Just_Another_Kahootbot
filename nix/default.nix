@@ -18,8 +18,12 @@ let
       yarn
     ];
     
-
-
+    postInstall = ''
+      mkdir -p $out/app
+      cp -r justAnotherKahootBot $out/app/
+      rm -rf $out/lib/justAnotherKahootBot
+    '';
+# rm -rf $out/justAnotherKahootBot
     meta = {
       description = "Just_Another_Kahoot_Bot is a highly scalable, single-threaded bot for Kahoot, built for deployment on Kubernetes. Unlike traditional bots that rely on Selenium, this bot uses raw WebSockets, providing better performance, stability, and reliability. The bot can flood Kahoot games, answer questions correctly, and remain stealthy.";
       homepage = "https://github.com/Feelfeel20088/Just_Another_Kahootbot";

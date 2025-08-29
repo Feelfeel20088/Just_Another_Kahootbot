@@ -13,7 +13,10 @@ logger.addHandler(ch)
 
 logdir = "/tmp/just_another_kahootbot"
 log_path = os.path.join(logdir, 'app.log')
-os.mkdir(logdir)
+
+if not os.path.exists(log_path):
+    os.mkdir(logdir)
+
 # FileHandler for logging to a file
 fh = logging.FileHandler(log_path, mode='w')  
 fh.setLevel(logging.DEBUG) 

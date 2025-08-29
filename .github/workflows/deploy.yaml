@@ -1,0 +1,46 @@
+name: Build & Deploy Docker Container (CI/CD)
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install nix
+        uses: cachix/install-nix-action@v26
+
+      - name: Build nix image
+        run: nix --extra-experimental-features 'flakes nix-command' build .#dockerImage
+
+      - name: Load nix image
+        run: docker load < result
+
+      - name: Set Docker tag
+        id: docker_tag
+        run: |
+            if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+                echo "tag=latest" >> $GITHUB_OUTPUT
+            elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+                echo "tag=dev" >> $GITHUB_OUTPUT
+            fi
+
+
+      - name: Tag Docker image
+        run: docker tag just_another_kahoot_bot:latest ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUBPASS }}" | docker login -u "${{ secrets.DOCKERHUBUSER }}" --password-stdin
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}

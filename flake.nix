@@ -56,6 +56,7 @@
             pkgs.python313Packages.quart
             pkgs.python313Packages.pydantic
             pkgs.python313Packages.orjson
+            pkgs.python313Packages.pytest
             pkgs.nodejs
             pkgs.yarn
 
