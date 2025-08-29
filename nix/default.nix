@@ -15,7 +15,11 @@ let
     
     ]) ++ [
       nodejs
-      yarn
+      python313
+      npm
+      
+      rustc
+      pkg-config
     ];
     
     postInstall = ''
