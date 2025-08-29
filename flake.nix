@@ -39,7 +39,7 @@
 
 
             copyToRoot = pkgs.buildEnv {
-              name = "just_another_kahootbot-docker-root";
+              name = "just_another_kahootbot";
               paths = [
                 just_another_kahootbot
               ];
