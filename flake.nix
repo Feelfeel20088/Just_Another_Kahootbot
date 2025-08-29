@@ -22,7 +22,7 @@
 
           dockerImage = pkgs.dockerTools.buildImage {
             name = "just_another_kahootbot";
-            
+            tag = "latest";
 
             # fromImage = pkgs.dockerTools.pullImage {
             #   imageName = "paketobuildpacks/nodejs";
@@ -39,7 +39,7 @@
 
 
             copyToRoot = pkgs.buildEnv {
-              name = "just_another_kahootbot";
+              name = "just_another_kahootbot-docker-root";
               paths = [
                 just_another_kahootbot
               ];
