@@ -14,8 +14,8 @@ let
       orjson
     
     ]) ++ [
-      nodejs
-      yarn
+      nodejs_24
+      rustc
     ];
     
     postInstall = ''
