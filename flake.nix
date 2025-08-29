@@ -22,7 +22,7 @@
 
           dockerImage = pkgs.dockerTools.buildImage {
             name = "just_another_kahootbot";
-            tag = "latest";
+            
 
             # fromImage = pkgs.dockerTools.pullImage {
             #   imageName = "paketobuildpacks/nodejs";
