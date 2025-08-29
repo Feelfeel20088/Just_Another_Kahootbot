@@ -21,7 +21,7 @@
           default = just_another_kahootbot;
 
           dockerImage = pkgs.dockerTools.buildImage {
-            name = "just_another_kahootbot";
+            name = "just_another_kahoot_bot";
             tag = "latest";
 
             # fromImage = pkgs.dockerTools.pullImage {
