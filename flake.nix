@@ -33,7 +33,7 @@
             # };
 
             config = {
-              Cmd = ["python" "-m" "justAnotherKahootBot"];
+              Cmd = ["python3" "-m" "justAnotherKahootBot"];
               WorkingDir = "/app";
             };
 
@@ -41,7 +41,8 @@
             copyToRoot = pkgs.buildEnv {
               name = "just_another_kahootbot-docker-root";
               paths = [
-                just_another_kahootbot    
+                just_another_kahootbot
+                pkgs.python313 
               ];
               pathsToLink = [ "/app" "/bin" ];
             };
