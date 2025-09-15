@@ -12,9 +12,7 @@
       systems = flake-utils.lib.defaultSystems;
 
       perSystem = { system, pkgs, ... }: let
-        just_another_kahootbot = (import ./nix/default.nix {
-          inherit pkgs;
-        }).just_another_kahootbot;
+        just_another_kahootbot = (pkgs.callPackage ./nix/default.nix {});
         
       in {
         packages = {
