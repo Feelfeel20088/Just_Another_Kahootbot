@@ -1,0 +1,53 @@
+name: Build & Test Kahoot Bot (CI)
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v26
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+    
+      - name: Build and run tests
+        id: run-tests
+        run: |
+          set -o pipefail
+          mkdir -p test-results
+          # Run the package (builds and executes the default command)
+          nix run . | tee test-results/output.log
+          echo "EXIT_CODE=$?" >> $GITHUB_ENV
+
+  
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ### CI Results
+            **Branch:** `${{ github.head_ref }}`
+            **Status:** ${{ env.EXIT_CODE == '0' && '✅ Passed' || '❌ Failed' }}
+
+            **Test logs:**
+            ```
+            ${{ env.EXIT_CODE == '0' && 'All tests passed!' || fromJSON('$(cat test-results/output.log | jq -R -s .)') }}
+            ```
