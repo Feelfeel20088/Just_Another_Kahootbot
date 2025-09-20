@@ -55,6 +55,7 @@
             pkgs.python313Packages.pydantic
             pkgs.python313Packages.orjson
             pkgs.python313Packages.pytest
+            pkgs.python313Packages.configargparse
             pkgs.nodejs
             pkgs.yarn
 

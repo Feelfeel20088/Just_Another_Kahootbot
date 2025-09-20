@@ -8,7 +8,7 @@ from .payloads import Payloads
 from .clientInfo import ClientInfo
 from .answer import Answer
 from .exceptions import *
-from justAnotherKahootBot.challenge.runchallenge import runChallenge
+from justAnotherKahootBot.challenge.runchallenge import Challenge 
 from .exceptions import SwarmHandler
 from justAnotherKahootBot.config.logger import logger
 from justAnotherKahootBot.events import compare_models_to_ingress_json
@@ -92,7 +92,7 @@ class KahootBot:
                     logger.error("Missing 'x-kahoot-session-token' header in response")
                     raise
 
-                challenge_response = runChallenge(json_data['challenge'], session_token)
+                challenge_response = Challenge.run_challenge(json_data['challenge'], session_token)
 
         except httpx.HTTPStatusError as e:
             logger.error(f"HTTP error occurred: {e.response.status_code} - {e.response.reason_phrase}")

@@ -3,7 +3,7 @@
     "version": "1.0.1",
     "description": "some really stupid script that solves a challenge from kahoot challenge",
     "dependencies": {
-        "lodash": "4.17.21"
+        "lodash": "^4.17.21"
     },
     "author": "felix vujasin",
     "license": "MIT"
