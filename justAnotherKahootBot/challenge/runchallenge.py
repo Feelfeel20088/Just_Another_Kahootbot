@@ -3,11 +3,15 @@ import base64
 import re
 import pytest
 import os
-from justAnotherKahootBot.config.logger import logdir
+from justAnotherKahootBot.config.state import args 
 
+
+# const
+logdir = args.log_dir
 
 challenge_path = os.path.join(logdir, 'challenge/challenge.js') 
 os.makedirs(os.path.dirname(challenge_path), exist_ok=True)
+
 
 # this is mostly just gonna be used for testing. 
 class Challenge: 
@@ -27,7 +31,7 @@ class Challenge:
     
     @pytest.mark.challenge_tests
     def dump_code_and_execute(self):
-        challenge_script = open("./justAnotherKahootBot/challenge/angular.js", "r").read() + challenge_code
+        challenge_script = open("./justAnotherKahootBot/challenge/angular.js", "r").read() + self.challenge_code
 
         open(challenge_path, "w").write(challenge_script)
     
@@ -41,19 +45,13 @@ class Challenge:
 
         challenge = result.stdout.strip()
 
-        decoded_token = base64.b64decode(token).decode('utf-8', 'strict')
+        decoded_token = base64.b64decode(self.token).decode('utf-8', 'strict')
 
         return decoded_token
         
     @pytest.mark.challenge_tests
     def xor_decoded_token(self):
-
-        result = []
-
-        for c1, c2 in zip(challenge, decoded_token):
-            result.append(chr(ord(c1) ^ ord(c2)))
-
-        return "".join(result)
+        return "".join([chr(ord(c1) ^ ord(c2)) for c1, c2 in zip(self.challenge, decoded_token)])
         
     @staticmethod
     def run_challenge(challenge_code: str, token: str) -> str:
@@ -87,6 +85,8 @@ class Challenge:
 
         decoded_token = base64.b64decode(token).decode('utf-8', 'strict')
         
+        
+
         return "".join([chr(ord(c1) ^ ord(c2)) for c1, c2 in zip(challenge, decoded_token)])
         
 
