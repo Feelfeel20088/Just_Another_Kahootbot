@@ -12,7 +12,7 @@ python313Packages.buildPythonApplication {
   src = pkgs.fetchFromGitHub {
     owner = "Feelfeel20088";
     repo = "Just_Another_Kahootbot";
-    rev = "v0.3.0-alpha"; 
+    rev = "v0.4.0-alpha"; 
     sha256 = "sha256-7Obo7nW3ZeFHPUt/cXlgbrGP09GlQGRFwcZAiMaSomo="; 
   };
 
