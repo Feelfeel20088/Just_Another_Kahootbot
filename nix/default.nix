@@ -13,7 +13,7 @@ python313Packages.buildPythonApplication {
     owner = "Feelfeel20088";
     repo = "Just_Another_Kahootbot";
     rev = "v0.4.0-alpha"; 
-    sha256 = "sha256-7Obo7nW3ZeFHPUt/cXlgbrGP09GlQGRFwcZAiMaSomo="; 
+    sha256 = " sha256-f9yyX8Zr1AwmmAEFZbne/v4NuVm6KfV7Y4qDky7x77A="; 
   };
 
   buildInputs = (with python313Packages; [
