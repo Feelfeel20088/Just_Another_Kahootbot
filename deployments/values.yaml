@@ -31,6 +31,6 @@ service:
 internalService:
   enabled: true
 
-externalService:
-  enabled: true
-  nodePort: 30005
+# externalService:
+#   enabled: true
+#   nodePort: 30005
