@@ -31,7 +31,7 @@
             # };
 
             config = {
-              Cmd = ["just_another_kahootbot serve"];
+              Cmd = [ "just_another_kahootbot" "serve" ];
               WorkingDir = "/app";
             };
 
