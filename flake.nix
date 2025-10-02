@@ -40,6 +40,7 @@
               name = "just_another_kahootbot-docker-root";
               paths = [
                 just_another_kahootbot
+                pkgs.sh
               ];
               pathsToLink = [ "/app" "/bin" ];
             };
