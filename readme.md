@@ -1,27 +1,20 @@
 # Just Another Kahoot Bot
 
-Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot designed for deployment on Kubernetes. And even better, it's not a shitty one that uses Selenium – it uses raw WebSockets, which improve reliability and performance. It can be easily connected to a web interface for control.
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Feelfeel20088/Just_Another_Kahootbot)
 
-## Keywords
-- Python
-- Kahoot Bot
-- Kahoot
-- Kahoot Hack
-- K3s
-- Kubernetes
-- Docker
 
+Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot designed for deployment on Kubernetes. It uses raw WebSockets, which improve reliability and performance. 
 
 ## Features
-- **Scalable**: The bot is designed to handle multiple Kahoot sessions simultaneously, meaning a single pod can manage multiple client requests and flood several Kahoot games at once. Pair it with an ingress controller and replicas, and you've got a fully scalable Kahoot bot.
+- **Scalable**: The bot is designed to handle multiple Kahoot sessions simultaneously, meaning a single instance can manage multiple client requests and flood several Kahoot games at once. Pair it with an ingress controller and replicas, and you've got a fully scalable Kahoot bot.
 - **Single-Threaded**: The bot operates efficiently in a single thread, ensuring optimal performance without any loss of speed or reliability.
 - **WebSocket-Based**: Unlike Selenium-based bots, which rely on web scraping, this bot uses raw WebSockets for faster, more reliable communication with Kahoot servers.
-- **Reliability**: Selenium-based bots often rely on scraping dynamic elements (like buttons or input boxes), which can break whenever Kahoot updates their frontend. WebSockets provide a much more stable and dependable way of interacting with the platform, avoiding this common pitfall.
-- **Kubernetes-Ready**: Easily deployable on Kubernetes clusters, enabling seamless scaling and management of multiple instances of the bot.
+- **Reliability**: Selenium-based bots often rely on scraping dynamic elements (like buttons or input boxes), which can break whenever Kahoot updates their frontend. WebSockets provide a much more stable and dependable way of interacting with the platform, avoiding this pitfall.
+- **Kubernetes-Ready**: Easily deployable on Kubernetes clusters, Docker compose or any other containtaer runtime that uses docker.
 - **Docker Support**: A pre-configured Docker image is provided, simplifying deployment and making it easier to get started quickly.
 - **Web Interface**: Coming soon – stay tuned for a simple, intuitive web interface for controlling the bot. If you're planning to build a web interface, check out the [Contributing.md](CONTRIBUTING.md).
 - **API Access**: Full API documentation is available for programmatically interacting with the bot. 
-- **K3s Compatibility**: This bot is fully compatible with lightweight Kubernetes clusters like K3s, making it an excellent choice for small-scale deployments.
+
 
 ## Kahoot-Related Features
 
@@ -36,24 +29,58 @@ Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot des
 
 ## API Documentation
 
-The API documentation is available at: [API Docs](https://distinct-cicada-mildly.ngrok-free.app/Just_Another_Kahootbot:documentation)
+The API documentation is available at: [API Docs](https://felixhub.dev/Just_Another_Kahootbot:documentation)
 
 
 ## Installation Instructions
 
-### Option 1: Deploy Using `deployment.yaml`
-If you prefer to deploy directly using the provided `deployment.yaml`, download it to your machine and skip to the **Deployment** section below.
+You have three main options for installing and running the bot:
 
-### Option 2: Clone the Repository
-To manually set up the bot, start by cloning the repository:
+### Option 1: Deploy using the Helm chart  
+If you're running a Kubernetes cluster, this is probably the best option for you.
+
+### Option 2: Pull or build the Docker container and deploy to any sort of container runtime  
+If you're not running a cluster, this is likely the better option.
+
+### Option 3: Deploy locally on any computer by just calling the init script  
+Not really recommended for production use, but it could work for testing or development.
+
+---
+
+### Step 1 (for all options): Clone the Repository
 ```bash
-git clone https://github.com/Feelfeel20088/Just_Another_Kahootbot.git --branch main
+git clone https://github.com/Feelfeel20088/Just_Another_Kahootbot.git --branch master
 cd Just_Another_Kahootbot
 ```
 
-## Building the Docker Container
+### Option 1 Steps:
 
-To build the Docker container, run the following command in the project's root directory:
+#### Step 1: Modify values.yaml to your liking. 
+```bash
+cd deployments
+your_text_editor values.yaml
+```
+
+#### Step 2: Deploy the helm chart. 
+```bash
+helm upgrade --install kahootbot ./ -f values.yaml
+```
+
+#### Step 3: Check if it deployed correctly.
+```bash 
+kubectl get pods
+```
+
+### Option 2 Steps: 
+
+#### Step 1: Pull or build the image.
+You can pull the image like this:
+```yaml
+image:
+  repository: Feelfeel200088/just_another_kahootbot
+  tag: latest
+```
+Or to build the Docker container, run the following command in the project's root directory:
 ```bash
 docker build -t <Your User/Gamertag>/just_another_kahootbot .
 ```
@@ -63,31 +90,17 @@ Once built, push the container to a registry like Docker Hub or Harbor if you ha
 docker push <Your User/Gamertag>/just_another_kahootbot
 ```
 
-Then change the repository location in the values.yaml file:
-```yaml
-image:
-  repository: <Your User/Gamertag>/just_another_kahootbot
-  tag: <YourTag>
-```
+#### Step 2: Deploy.
+You can deploy however you want if u want to create a deployment.yaml, run it on compose, or just run it on a docker cluster thats up to u. if you need insterpation check out the helms chat templetess
 
-## Deployment
 
-In the root Deploy the application using:
+### Option 3 Steps: 
+
+#### step 1: Run the program. 
+Go to the parent dir of the bot and run the program like this: 
 ```bash
-helm upgrade --install deployments -f deployments/values.yaml
+python -m Just_Another_Kahoot_Bot # or what ever you cloned the bot as
 ```
 
-### Verifying Deployment
-To check if the pod is running in a specific namespace, use:
-```bash
-kubectl get pods -n <namespace>
-```
 
-Once deployed, the bot should be up and running. If you encounter any issues, verify that the pod is running properly and check the logs using:
-```bash
-kubectl get pods -f <namespace>
-kubectl logs -f <pod-name>
-```
-
-Happy botting! 🎉
 
