@@ -1,5 +1,6 @@
 import argparse
 from justAnotherKahootBot.config.state import set_args
+import os
 
 # get command line inputs here.
 # this should be simple stuff like bindings to where the config file is.
@@ -37,8 +38,25 @@ parser.add_argument(
         "  3: Debug mode"
     )
 )
-parser.add_argument("-l","--log-dir", type=str, help="Path to a file to write logs. If not specified, logs go to stdout.")
 
+class LogDirAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+
+        logdir = values[0] if isinstance(values, list) else values
+
+
+        os.makedirs(logdir, exist_ok=True)
+        
+        setattr(namespace, self.dest, logdir)
+
+
+parser.add_argument(
+    "-l", "--log-dir",
+    default="/tmp/just_another_kahoot_bot",
+    action=LogDirAction,
+    type=str,
+    help="Path to a file to write logs. If not specified, logs go to stdout."
+)
 
 oneshot_parser.add_argument("-c", "--count", type=int, default=10, help="Number of bots to join with")
 oneshot_parser.add_argument("-p", "--game-pin", type=int, required=True, help="Number of bots to join with")
@@ -47,8 +65,8 @@ oneshot_parser.add_argument("-u", "--uuid", type=str, default=10, help="Number o
 
 # make hoster args when i actually build the hoster
 
-
-set_args(parser.parse_args())
+args = parser.parse_args()
+set_args(args)
 
 from justAnotherKahootBot.events import init_events
 import hypercorn.asyncio
@@ -61,7 +79,6 @@ from justAnotherKahootBot.config.logger import setup_logger
 
 
 def main():
-    set_args(args)
     setup_logger()
     init_events()
     config = Config.from_mapping(bind=[f"{args.address}:{args.port}"])

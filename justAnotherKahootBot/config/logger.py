@@ -1,11 +1,16 @@
 import logging
+from pathlib import Path
 import os
+from justAnotherKahootBot.config.state import args 
 
+log_dir = args.log_dir
+verbose_level = args.verbose
 
 logger = logging.getLogger(__name__)
 
 
-def setup_logger(verbose_level=1, log_file=None):
+
+def setup_logger():
     logger.handlers.clear()
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
@@ -23,9 +28,11 @@ def setup_logger(verbose_level=1, log_file=None):
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    if log_file:
-        os.makedirs(os.path.dirname(log_file), exist_ok=True)
-        fh = logging.FileHandler(log_file, mode='w')
-        fh.setLevel(logging.DEBUG)
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
+    
+    log_file = Path(os.path.join(log_dir, "logs"))
+    log_file.touch(exist_ok=True)
+    
+    fh = logging.FileHandler(log_file, mode='w')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)

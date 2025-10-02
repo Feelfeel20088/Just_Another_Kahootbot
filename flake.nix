@@ -60,7 +60,7 @@
             pkgs.yarn
 
             # linter
-            pkgs.python313Packages.ruff
+            # pkgs.python313Packages.ruff
           ];
         };
       };

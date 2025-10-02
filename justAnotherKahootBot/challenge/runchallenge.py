@@ -5,9 +5,14 @@ import pytest
 import os
 from justAnotherKahootBot.config.state import args 
 
+if args == None:
+    raise 
+
 
 # const
 logdir = args.log_dir
+
+
 
 challenge_path = os.path.join(logdir, 'challenge/challenge.js') 
 os.makedirs(os.path.dirname(challenge_path), exist_ok=True)

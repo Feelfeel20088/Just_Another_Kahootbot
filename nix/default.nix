@@ -7,14 +7,16 @@ with pkgs;
 
 python313Packages.buildPythonApplication {
   name = "just_another_kahootbot";
-  version = "v0.2.0-alpha";
+  version = "v0.4.0-alpha";
 
-  src = pkgs.fetchFromGitHub {
-    owner = "Feelfeel20088";
-    repo = "Just_Another_Kahootbot";
-    rev = "v0.4.0-alpha"; 
-    sha256 = "sha256-f9yyX8Zr1AwmmAEFZbne/v4NuVm6KfV7Y4qDky7x77A="; 
-  };
+  # src = pkgs.fetchFromGitHub {
+  #   owner = "Feelfeel20088";
+  #   repo = "Just_Another_Kahootbot";
+  #   rev = "v0.4.0-alpha"; 
+  #   sha256 = "sha256-f9yyX8Zr1AwmmAEFZbne/v4NuVm6KfV7Y4qDky7x77A="; 
+  # };
+  
+  src = ../.;
 
   buildInputs = (with python313Packages; [
     pytest
@@ -27,6 +29,7 @@ python313Packages.buildPythonApplication {
     pydantic
     orjson
     configargparse
+    pytest
   ]) ++ [ nodejs_24 ];
 
   # for docker
@@ -42,3 +45,4 @@ python313Packages.buildPythonApplication {
     maintainers = with lib.maintainers; [ Feelfeel20088 ];
   };
 }
+
