@@ -30,12 +30,14 @@ python313Packages.buildPythonApplication {
     orjson
     configargparse
     pytest
-  ]) ++ [ nodejs_24 ];
+    
+  ]);
 
   # for docker
   postInstall = ''
     mkdir -p $out/app
     cp -r . $out/app/
+    
   '';
   
   meta = {
