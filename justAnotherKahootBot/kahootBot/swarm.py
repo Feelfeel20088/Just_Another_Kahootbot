@@ -124,7 +124,7 @@ class Swarm:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                print(f"default exception caught in swarm {self.id}:", e)
+                logger.error(f"default exception caught in swarm {self.id}:", e)
 
     async def start(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int):
         """Start the swarm in an async event loop with TTL check."""

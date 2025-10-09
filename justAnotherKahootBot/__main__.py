@@ -44,7 +44,6 @@ class LogDirAction(argparse.Action):
 
         logdir = values[0] if isinstance(values, list) else values
 
-
         os.makedirs(logdir, exist_ok=True)
         
         setattr(namespace, self.dest, logdir)
