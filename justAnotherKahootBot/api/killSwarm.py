@@ -10,10 +10,9 @@ context = Context()
 async def killSwarm():
     """Kills a swarm"""
     data = await request.json
+    
     id = data.get('id') 
 
-    
-    
     swarm = context.getSwarm(id)
 
     swarm.killSwarm(None)

@@ -40,7 +40,9 @@ class Context:
 
                         # show what objects reference it
                         refs = gc.get_referrers(swarm)
+
                         logger.debug(f"Found {len(refs)} referrers:")
+                        
                         for r in refs:
                             logger.debug(f" - {type(r)} {getattr(r, '__name__', '')}")
 
