@@ -2,8 +2,28 @@
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Feelfeel20088/Just_Another_Kahootbot)
 
+[![License: MLA](https://img.shields.io/badge/License-MLA-blue.svg)](https://www.mla.org/Resources/MLA-Style)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://makeapullrequest.com)
+[![Discord](https://img.shields.io/discord/1366276472548888759?label=Discord)](https://discord.felixhub.dev)
 
-Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot designed for deployment on Kubernetes. It uses raw WebSockets, which improve reliability and performance. 
+![Alt](https://repobeats.axiom.co/api/embed/fcb871f665e8b1c344d603584a99b3e047b04ba0.svg "Repobeats analytics image")
+
+---
+
+## Contributing
+
+[Contributions](contributing.md) are welcome! 🙂  
+
+---
+
+## Discord
+
+Join the community on [Discord](https://discord.felixhub.dev) to ask questions, get support, or discuss features.
+
+---
+### Just_Another_Kahoot_Bot
+
+Just_Another_Kahoot_Bot (JAKBOT) is a completely scalable, single-threaded Kahoot bot designed for deployment on Kubernetes. It uses raw WebSockets, which improve reliability and performance. 
 
 ## Features
 - **Scalable**: The bot is designed to handle multiple Kahoot sessions simultaneously, meaning a single instance can manage multiple client requests and flood several Kahoot games at once. Pair it with an ingress controller and replicas, and you've got a fully scalable Kahoot bot.
@@ -12,7 +32,7 @@ Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot des
 - **Reliability**: Selenium-based bots often rely on scraping dynamic elements (like buttons or input boxes), which can break whenever Kahoot updates their frontend. WebSockets provide a much more stable and dependable way of interacting with the platform, avoiding this pitfall.
 - **Kubernetes-Ready**: Easily deployable on Kubernetes clusters, Docker compose or any other containtaer runtime that uses docker.
 - **Docker Support**: A pre-configured Docker image is provided, simplifying deployment and making it easier to get started quickly.
-- **Web Interface**: Coming soon – stay tuned for a simple, intuitive web interface for controlling the bot. If you're planning to build a web interface, check out the [Contributing.md](CONTRIBUTING.md).
+- **Web Interface**: Coming soon – stay tuned for a simple, intuitive web interface for controlling the bot. If you're planning to build a web interface, check out the [Contributing.md](contributing.md).
 - **API Access**: Full API documentation is available for programmatically interacting with the bot. 
 
 
@@ -30,6 +50,7 @@ Just_Another_Kahoot_Bot is a completely scalable, single-threaded Kahoot bot des
 ## API Documentation
 
 The API documentation is available at: [API Docs](https://felixhub.dev/Just_Another_Kahootbot:documentation)
+(Needs major updates. See [contributing.md](contributing.md).)
 
 
 ## Installation Instructions
