@@ -26,6 +26,7 @@ class Swarm:
         self.instancetotask: dict[KahootBot, asyncio.Task] = {}
         self.stop = False
         self.clean_execution: FatalError = None
+        self.done = False
 
     def getSwarmId(self):
         """Gets the Swarms uuid"""
@@ -156,6 +157,8 @@ class Swarm:
             else:
                 e = f"with a error: {type(self.clean_execution).__name__} error details: {self.clean_execution}"
             logger.info(f"Swarm {self.id} with {amount} bot(s) and a lifetime of {ttl} second(s) closed {e}")
+
+            self.done = True
         except Exception as e:
             logger.error(f"Found error in swarm {self.id}: {e}")
 
