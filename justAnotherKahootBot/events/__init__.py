@@ -131,7 +131,7 @@ def init_events():
                     
 
 
-debug_class_use_times: Dict[Type[BaseModel], int] = defaultdict(int)
+# debug_class_use_times: Dict[Type[BaseModel], int] = defaultdict(int)
 
 async def compare_models_to_ingress_json(json: str, instance):
     # this lowers the time conplexity (o(n) - seperating the channles into diffrent lists)
@@ -148,7 +148,7 @@ async def compare_models_to_ingress_json(json: str, instance):
         # print("model keys: \n", model_keys, "\n json keys: \n", json_keys, "\n\n\n\n\n")
         if model_keys == json_keys:
             event = model.model_validate(json)
-            debug_class_use_times[type(event)] += 1  
+            # debug_class_use_times[type(event)] += 1  
             await event.handle(instance)
             return
         
