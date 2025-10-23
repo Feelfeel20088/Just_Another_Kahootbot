@@ -39,7 +39,12 @@ jobs:
                 echo "tag=latest" >> $GITHUB_OUTPUT
             elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
                 echo "tag=dev" >> $GITHUB_OUTPUT
+            else
+                # fallback for feature branches
+                BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | tr '/' '-')
+                echo "tag=${BRANCH_NAME}" >> $GITHUB_OUTPUT
             fi
+
 
 
       - name: Tag Docker image
