@@ -1,6 +1,8 @@
 from enum import Enum, auto
-from typing import Any, Dict, Type
-
+from typing import Any, Dict, List, Type, Optional
+from .kahoot_model import Question
+import random
+from typing import Protocol
 
 class QuizTypes(Enum):
     scale = "scale"
@@ -18,77 +20,137 @@ class QuizTypes(Enum):
 
 
 
-from typing import Any
+class QuestionParserProtocol(Protocol):
+    def correct(self) -> int:
+        """Return the index of the correct choice"""
+        ...
+
+    def incorrect(self) -> int:
+        """Return an index of an incorrect choice"""
+        ...
+
+    def random(self) -> int:
+        """Return a random choice index"""
+        ...
+
+    def question_text(self) -> str:
+        """Return the text of the question"""
+        ...
+
+    def has_choices(self) -> bool:
+        """Whether the question has choices"""
+        ...
 
 
-class BaseParser:
-    def parse(self, data: dict) -> Any:
-        """All concrete parsers must implement this."""
-        raise NotImplementedError(f"{self.__class__.__name__} has not implemented parse().")
 
 
-class QuizParser(BaseParser):
-    def parse(self, data: dict) -> dict:
+class BaseQuestionParser:
+    
+    def __init__(self, q: Question):
+        self._question = q
+    
+    def get_question_type(self) -> Optional[str]:
+        return self._question.question_type if self._question and self._question.question_type is not None else None
+
+    def get_time(self) -> Optional[int]:
+        return self._question.time if self._question and self._question.time is not None else None
+
+    def get_points(self) -> Optional[bool]:
+        return self._question.points if self._question and self._question.points is not None else None
+
+    def get_points_multiplier(self) -> Optional[int]:
+        return self._question.pointsMultiplier if self._question and self._question.pointsMultiplier is not None else None
+
+    def get_image(self) -> Optional[HttpUrl]:
+        return self._question.image if self._question and self._question.image is not None else None
+
+    def get_resources(self) -> Optional[str]:
+        return self._question.resources if self._question and self._question.resources is not None else None
+
+    def get_question_format(self) -> Optional[int]:
+        return self._question.questionFormat if self._question and self._question.questionFormat is not None else None
+
+    def get_media(self) -> Optional[List]:
+        return self._question.media if self._question and self._question.media is not None else None
+        
+
+class QuizParser(BaseQuestionParser, QuestionParserProtocol):
+    def __init__(self, q: Question):
+        super().__init__(q)
+
+    def correct(self) -> int:
+        return next((i for i, c in enumerate(self._question.choices) if c.correct), None)
+
+    def incorrect(self) -> int:
+        return next((i for i, c in enumerate(self._question.choices) if not c.correct), None)
+
+    def random(self) -> int:
+        return random.randint(0,3)
+
+    def question_text(self) -> str:
+        return self._question.question
+
+    def has_choices(self) -> bool:
+        return True
+    
+class ScaleParser(BaseQuestionParser):
+    def parse(self, data: Question) -> dict:
         pass
 
-class ScaleParser(BaseParser):
-    def parse(self, data: dict) -> dict:
+class WordCloudParser(BaseQuestionParser):
+    def parse(self, data: Question) -> dict:
         pass
 
-class WordCloudParser(BaseParser):
-    def parse(self, data: dict) -> dict:
-        pass
-
-class ContentParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class ContentParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class SurveyParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class SurveyParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class BrainstormingParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class BrainstormingParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class DropPinParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class DropPinParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class MultipleSelectPollParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class MultipleSelectPollParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class JumbleParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class JumbleParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class NPSParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class NPSParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class FeedbackParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class FeedbackParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
-class PinItParser(BaseParser):
-    def parse(self, data: dict) -> Any:
+class PinItParser(BaseQuestionParser):
+    def parse(self, data: Question) -> Any:
         pass
 
 
 
-class Parsers:
+class QParsers:
     """Main registry for all quiz type parsers."""
 
-    PARSER_MAP: Dict[QuizTypes, Type[BaseParser]] = {
+    PARSER_MAP: Dict[QuizTypes, Type[BaseQuestionParser]] = {
         QuizTypes.quiz: QuizParser,
         QuizTypes.scale: ScaleParser,
         QuizTypes.word_cloud: WordCloudParser,
@@ -105,7 +167,7 @@ class Parsers:
 
 
     @classmethod
-    def parse(cls, qtype: QuizTypes | str, data: dict):
+    def parse(cls, qtype: QuizTypes | str, q: Question):
         if isinstance(qtype, str):
             try:
                 qtype = QuizTypes(qtype)
@@ -117,4 +179,4 @@ class Parsers:
         if not parser_cls:
             raise NotImplementedError(f"No parser registered for {qtype.value}")
         
-        return parser_cls().parse(data)
+        return parser_cls(q)

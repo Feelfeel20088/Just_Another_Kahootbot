@@ -1,8 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
-from .clientInfo import ClientInfo
 import orjson
 from justAnotherKahootBot.config.logger import logger
+import time
+import random
+from .parse import BaseQuestionParser 
 
 class Content(BaseModel):
     type: str
@@ -45,7 +47,54 @@ class KahootMessage(BaseModel):
 #     "ext": {}
 # }
 
+class ClientInfo:
+    __nickname: str
+    __gameid: str
+    __clientid: str
+    __question_index: int = -1
+    __ack: int = 2
+    __id: int = 6
+    
 
+    # getter / setters
+
+    def get_nickname(self) -> str:
+        return self.__nickname
+
+    def set_nickname(self, value) -> str:
+        self.__nickname = value
+
+    def set_gameid(self, value: str):
+        self.__gameid = value
+
+    def get_gameid(self) -> str:
+        return self.__gameid
+
+    
+    def set_gameid(self, value: str):
+        self.__gameid = value
+
+    
+    def get_clientid(self) -> str:
+        return self.__clientid
+
+    
+    def set_clientid(self, value: str):
+        self.__clientid = value
+
+    def get_question_index(self) -> int:
+        self.__question_index =+ 1
+        return self.__question_index
+
+
+    def get_ack(self) -> int:
+        self.__ack =+ 1
+        return self.__ack
+
+
+    def get_id(self) -> int:
+        self.__id =+ 1
+        return self.__id
 
 
 class AnswerBuilder:
@@ -53,8 +102,9 @@ class AnswerBuilder:
         self._client_info = client_info
         self._type: Optional[str] = None
         self._choice: Optional[int] = None
-        self._question_index: Optional[int] = None
+        self._parser: Optional[BaseQuestionParser] = None
 
+    # Manual setters
     def set_type(self, question_type: str):
         self._type = question_type
         return self
@@ -63,15 +113,30 @@ class AnswerBuilder:
         self._choice = choice
         return self
 
-    def set_random_choice(self, max_choice: int):
-        self._choice = random.randint(0, max_choice - 1)
-        return self
-
     def set_question_index(self, index: int):
         self._question_index = index
         return self
 
+    def from_parser(self, parser: BaseQuestionParser, choice_strategy: str = "correct"):
+        """
+        Fill fields automatically from a parser instance.
+        choice_strategy: "correct", "incorrect", "random"
+        """
+        self._parser = parser
+        self._type = parser.get_question_type()
+        if choice_strategy == "correct":
+            self._choice = parser.correct()
+        elif choice_strategy == "incorrect":
+            self._choice = parser.incorrect()
+        elif choice_strategy == "random":
+            self._choice = parser.random()
+        else:
+            raise ValueError(f"Unknown choice strategy: {choice_strategy}")
+
+        return self
+
     def build(self) -> KahootMessage:
+        # Must have type, choice, question_index from either manual or parser
         if self._type is None or self._choice is None or self._question_index is None:
             raise ValueError("AnswerBuilder is missing required fields")
 
@@ -94,8 +159,9 @@ class AnswerBuilder:
             channel="/service/controller",
             data=data,
             clientId=self._client_info.get_clientid(),
-            ext={}  
+            ext={}
         )
+
 
 # To properly answer a question in Kahoot, you must follow a specific control flow:
 #
@@ -122,9 +188,7 @@ class Answer:
         
         await ws.send(orjson.dumps(answer_data.model_dump()).decode())
 
-        t = t - time.time()
-
-        elapsed = time.time() - start_time
+        elapsed = time.time() - t
         
         logger.debug(
             f"Bot '{context.get_nickname()}' sent answer in {elapsed:.4f}s | "

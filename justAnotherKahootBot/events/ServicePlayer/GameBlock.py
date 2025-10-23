@@ -2,7 +2,7 @@ from pydantic import BaseModel, model_validator, Field
 from .bases import ServicePlayer, Ext
 from typing import List, Optional, Union
 import orjson
-
+from justAnotherKahootBot.fetcher import AnswerBuilder, Fetcher
 
 class Video(BaseModel):
     startTime: int
@@ -62,7 +62,9 @@ class GameBlock(ServicePlayer):
         return values
 
     async def handle(self, instance):
-        await instance.answerQuestion(
-            self.data.content.numberOfAnswersAllowed,
-            self.data.content.type
-        )
+        fetcher: Fetcher = instance.get_fetcher()
+        parser = fetcher.get_parser(self.data.content.gameBlockIndex)
+        AnswerBuilder.set_choice(parser.correct())
+        AnswerBuilder.set_question_index(self.data.content.gameBlockIndex)
+        
+

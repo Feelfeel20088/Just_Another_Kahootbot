@@ -66,4 +66,4 @@ class PreGameBLock(ServicePlayer):
     
     
     async def handle(self, instance):
-        pass
+        await instance.standAloneHeartBeat()

@@ -6,14 +6,14 @@ import uuid
 import time
 from .payloads import Payloads
 from .clientInfo import ClientInfo
-from .answer import Answer
+from ..fetcher.answer import Answer
 from .exceptions import *
 from justAnotherKahootBot.challenge.runchallenge import Challenge 
 from .exceptions import SwarmHandler
 from justAnotherKahootBot.config.logger import logger
 from justAnotherKahootBot.events import compare_models_to_ingress_json
 import orjson
-
+from justAnotherKahootBot.fetcher import Fetcher, FetcherError
 
 
 """
@@ -24,7 +24,7 @@ MOST OF THIS IS PROOF OF CONCEPT AND SHOULD BE REVISED.
 
 class KahootBot:
 
-    def __init__(self, gameid: int, nickname: str, crash: bool, queue: asyncio.Queue):
+    def __init__(self, gameid: int, nickname: str, crash: bool, queue: asyncio.Queue, fetcher: Fetcher):
         self.clientInfo = ClientInfo()
         self.clientInfo.set_gameid(gameid)
         self.clientInfo.set_nickname(nickname)
@@ -33,6 +33,7 @@ class KahootBot:
         self.errorHandler = queue
         self.childTasks = []
         self.timeout = 10.0 
+        self.fetcher = fetcher
 
     def get_nickname(self):
         return self.clientInfo.get_nickname();
@@ -62,6 +63,9 @@ class KahootBot:
     #         logger.error(f"WatchDog found a unhandled error in connect(): {e}")
     #     finally:
     #         await self.cleanUp()
+
+    def get_fetcher(self) -> Fetcher:
+        return self.fetcher
 
 
     async def connect(self):

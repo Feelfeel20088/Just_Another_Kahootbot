@@ -9,7 +9,7 @@ import pydantic
 from enum import Enum, auto
 from justAnotherKahootBot.fetcher.kahoot_model import KahootQuiz
 
-from justAnotherKahootBot.fetcher.parse import Parsers
+from justAnotherKahootBot.fetcher.parse import QParsers
 
 from justAnotherKahootBot.config.state import state
 
@@ -61,9 +61,6 @@ class FetcherError(Exception):
                     include_input=include_input_flag,
                     include_url=False
                 )})"
-    
-    def reason():
-        """The Reason for the error"""
         
 
 
@@ -76,9 +73,8 @@ class Fetcher:
 
     def __init__(self):
         # to parse
+        
         self.__raw = None
-
-        # parsed
 
     @classmethod
     def _get_headers(cls):
@@ -92,9 +88,6 @@ class Fetcher:
             'Cache-Control': 'no-cache',
             'Pragma': 'no-cache'
         }
-
-    def _parse():
-        pass
 
     async def fetch_all(self, uuid: str, retry: int = 1, retry_increment: int = 5, headers: dict = None):
         """"""
@@ -139,129 +132,5 @@ class Fetcher:
         
         self.__raw = model
     
-    @cache
-    def __get_correct_indices(self):
-        """
-        Gets the correct indices for each question's choices. This is what you will be sending back to Kahoot.
-
-        Returns:
-            dict[int, int | None]: Mapping of question index to the index of the correct choice.
-                If a question has no choices, the value is None.
-
-        Example:
-            >>> fetcher.get_correct_indices()
-            {0: 2, 1: 0, 2: 3, 3: None}
-        """
-        
-        d = defaultdict(dict)
-        
-        if self.__raw.questions is []: return d
-
-        for index, question in enumerate(self.__raw.questions): 
-            
-            if question.choices is None:
-                d[index] = None
-            
-            
-            d[index] = next((i for i, c in enumerate(question.choices) if c.correct), None)
-
-        return d
-    
-    @cache  
-    def __get_correct_answers(self):
-        """
-        Gets the correct answer text for each question's choices.
-
-        Returns:
-            dict[int, str]: Mapping of question index to the text of the correct choice.
-                If a question has no choices, the value is None.
-
-        Example:
-            >>> fetcher.get_correct_indices()
-            {0: "Chicago, Illinois", 1: "The Sandwich King"}
-        """
-        
-        d = defaultdict(dict)
-        
-        if self.__raw.questions is []: return d
-
-        for index, question in enumerate(self.__raw.questions): 
-            
-            if question.choices is None:
-                d[index] = None
-            
-            
-            d[index] = next((c.answer for c in question.choices if c.correct), None)
-
-        return d
-    
-    @cache 
-    def get_question_types(self):
-        """
-        Gets the question type for each question in the quiz.
-
-        Returns:
-            dict[int, str | None]: Mapping of question index to its question type.
-                If a question type is unavailable, the value is None.
-
-        Example:
-            >>> fetcher.__get_question_types()
-            {0: "quiz", 1: "true_false", 2: "word_cloud"}
-        """
-
-        d = defaultdict(dict)
-        
-        if self.__raw.questions is []: return d
-
-        for index, question in enumerate(self.__raw.questions): 
-            
-            d[index] = question.question_type
-            print(question.question_type)
-
-        return d
-
-    def get_correct_indice(self, index: int):
-        """
-        Gets the correct choice index for a specific question.
-
-        Args:
-            index (int): The index of the question in the quiz.
-
-        Returns:
-            int | None: The index of the correct choice for the given question.
-                Returns None if the question has no choices.
-
-        Example:
-            >>> fetcher.get_correct_indice(0)
-            2
-            # First question's correct choice is at index 2
-        """
-        return self.__get_correct_indices()[index]
-
-    def get_correct_answer(self, index: int):
-        """
-        Gets the correct answer text for a specific question.
-
-        Args:
-            index (int): The index of the question in the quiz.
-
-        Returns:
-            str | None: The text of the correct choice for the given question.
-                Returns None if the question has no choices.
-
-        Example:
-            >>> fetcher.get_correct_answer(0)
-            "Beijing, China"
-            # Returns the text of the first question's correct answer
-        """
-        return self.__get_correct_answers()[index]
-
-
-    
-
-
-async def main():
-    f = await Fetcher.fetch_all("fd21a167-00fb-49a8-aae3-a9359c661c2c")
-    print(f.get_correct_indice(7))
-
-asyncio.run(main())
+    def get_parser(self, question_index: int):
+        return QParsers.parse(self.__raw.questions[question_index].question_type)
