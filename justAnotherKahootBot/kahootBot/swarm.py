@@ -8,6 +8,7 @@ import secrets
 from justAnotherKahootBot.config.logger import logger
 from .exceptions import FatalError, SwarmHandler, TaskCrash
 from justAnotherKahootBot.api.context import Context
+from justAnotherKahootBot.fetcher import Fetcher, FetcherError, FetcherErrorType
 
 
 class Swarm:
@@ -27,6 +28,8 @@ class Swarm:
         self.stop = False
         self.clean_execution: FatalError = None
         self.done = False
+        # will get shared with the instances
+        self.fetcher = Fetcher()
 
     def getSwarmId(self):
         """Gets the Swarms uuid"""
@@ -44,7 +47,7 @@ class Swarm:
         """Start a new bot instance and create its task."""
         # if the instance is one simply name the bot without the hash
         if self.amount == 1: 
-            instance = KahootBot(self.gameid, self.nickname, self.crash, self.queue)
+            instance = KahootBot(self.gameid, self.nickname, self.crash, self.queue, self.fetcher)
         else: 
             instance = KahootBot(self.gameid, f"{self.nickname}{secrets.token_hex(6)}", self.crash, self.queue)
         
@@ -136,7 +139,17 @@ class Swarm:
             except Exception as e:
                 logger.error(f"default exception caught in swarm {self.id}:", e)
 
-    async def start(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int):
+    async def fetcher_bootstrap(self, uuid: str):
+        try: 
+            await self.fetcher.fetch_all(uuid)
+        except FetcherError as e:
+            logger.error(f"Fetcher returned an error in swarm {self.id}: {e}")
+            logger.debug("FetcherError traceback:\n" + "".join(traceback.format_exception(e)))
+        except Exception as e:
+            logger.error(f"Unknown exception occurred inside Fetcher in swarm {self.id}: {e}")
+            logger.debug("Generic exception traceback:\n" + "".join(traceback.format_exception(e)))
+
+    async def start(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int, uuid: str | None):
         """Start the swarm in an async event loop with TTL check."""
         try:
             self.gameid = gameid
@@ -146,6 +159,9 @@ class Swarm:
             logger.debug(f"starting {amount} kahoot bot(s) in swarm {self.id} ...")
 
             self.watchdog = asyncio.create_task(self.watchDog())
+
+            if uuid is not None:
+                asyncio.create_task(self.fetcher_bootstrap())
 
             
             for _ in range(int(amount)):
@@ -174,7 +190,7 @@ class Swarm:
 
 
     # Task starter for the /swarm endpoint wrapped in a new task as we dont want the endpoint to live for the entire duration of the swarm.
-    def createSwarm(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int):
+    def createSwarm(self, gameid: int, nickname: str, crash: bool, amount: int, ttl: int, uuid: str | None):
         """Create a new swarm task and run it asynchronously."""
         logger.info(f"New swarm creation started. Amount: {amount}, TTL: {ttl}, nickname: {nickname}")
-        asyncio.create_task(self.start(gameid, nickname, crash, amount, ttl))
+        asyncio.create_task(self.start(gameid, nickname, crash, amount, ttl, uuid))

@@ -11,6 +11,8 @@ from justAnotherKahootBot.fetcher.kahoot_model import KahootQuiz
 
 from justAnotherKahootBot.fetcher.parse import Parsers
 
+from justAnotherKahootBot.config.state import state
+
 # const
 api = "https://play.kahoot.it/rest/kahoots/"
 
@@ -49,7 +51,7 @@ class FetcherError(Exception):
                         "FetcherErrorType.PARSE_ERROR requires original_exception to be a Pydantic ValidationError"
                     )
                 
-                if args.verbosity >= 3:
+                if state.verbosity >= 3:
                     include_input_flag = True
                 else:
                     include_input_flag = False
@@ -72,9 +74,9 @@ class FetcherError(Exception):
 
 class Fetcher:
 
-    def __init__(self, raw: KahootQuiz):
+    def __init__(self):
         # to parse
-        self.__raw = raw
+        self.__raw = None
 
         # parsed
 
@@ -94,8 +96,7 @@ class Fetcher:
     def _parse():
         pass
 
-    @classmethod
-    async def fetch_all(cls, uuid: str, retry: int = 1, retry_increment: int = 5, headers: dict = None):
+    async def fetch_all(self, uuid: str, retry: int = 1, retry_increment: int = 5, headers: dict = None):
         """"""
         if headers is None:
             headers = cls._get_headers()
@@ -135,8 +136,8 @@ class Fetcher:
                 "Invalid data presented to the pydantic parser.",
                 e
             )
-        print(model)
-        return Fetcher(model)
+        
+        self.__raw = model
     
     @cache
     def __get_correct_indices(self):
@@ -182,9 +183,9 @@ class Fetcher:
         
         d = defaultdict(dict)
         
-        if self.__model.questions is []: return d
+        if self.__raw.questions is []: return d
 
-        for index, question in enumerate(self.__model.questions): 
+        for index, question in enumerate(self.__raw.questions): 
             
             if question.choices is None:
                 d[index] = None
@@ -209,10 +210,10 @@ class Fetcher:
         """
 
         d = defaultdict(dict)
+        
+        if self.__raw.questions is []: return d
 
-        if self.__model.questions is []: return d
-
-        for index, question in enumerate(self.__model.questions): 
+        for index, question in enumerate(self.__raw.questions): 
             
             d[index] = question.question_type
             print(question.question_type)

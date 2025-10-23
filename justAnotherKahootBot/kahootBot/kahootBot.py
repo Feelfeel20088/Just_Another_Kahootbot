@@ -16,8 +16,10 @@ import orjson
 
 
 
-
-
+"""
+ALL OF THIS NEEDS A MAJOR CLEANUP. 
+MOST OF THIS IS PROOF OF CONCEPT AND SHOULD BE REVISED.
+"""
 
 
 class KahootBot:
