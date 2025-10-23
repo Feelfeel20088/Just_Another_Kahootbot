@@ -11,7 +11,7 @@ from justAnotherKahootBot.fetcher.kahoot_model import KahootQuiz
 
 from justAnotherKahootBot.fetcher.parse import QParsers
 
-from justAnotherKahootBot.config.state import state
+from justAnotherKahootBot.config.state import args
 
 # const
 api = "https://play.kahoot.it/rest/kahoots/"
@@ -51,7 +51,7 @@ class FetcherError(Exception):
                         "FetcherErrorType.PARSE_ERROR requires original_exception to be a Pydantic ValidationError"
                     )
                 
-                if state.verbosity >= 3:
+                if args.verbosity >= 3:
                     include_input_flag = True
                 else:
                     include_input_flag = False

@@ -61,9 +61,6 @@ class BaseQuestionParser:
     def get_points_multiplier(self) -> Optional[int]:
         return self._question.pointsMultiplier if self._question and self._question.pointsMultiplier is not None else None
 
-    def get_image(self) -> Optional[HttpUrl]:
-        return self._question.image if self._question and self._question.image is not None else None
-
     def get_resources(self) -> Optional[str]:
         return self._question.resources if self._question and self._question.resources is not None else None
 

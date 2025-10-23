@@ -1,3 +1,4 @@
+from justAnotherKahootBot.kahootBot.client_info import ClientInfo
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 import orjson

@@ -5,7 +5,9 @@ import random
 import uuid
 import time
 from .payloads import Payloads
-from .clientInfo import ClientInfo
+
+
+from .client_info import ClientInfo
 from ..fetcher.answer import Answer
 from .exceptions import *
 from justAnotherKahootBot.challenge.runchallenge import Challenge 

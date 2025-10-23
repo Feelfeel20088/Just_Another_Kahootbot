@@ -10,7 +10,7 @@ replicaCount: 3
 # If you're using a local image, you can replace this
 image:
   repository: feelfeel200088/just_another_kahoot_bot
-  tag: dev
+  tag: master
   pullPolicy: Always
 
 containerPort: 8000
