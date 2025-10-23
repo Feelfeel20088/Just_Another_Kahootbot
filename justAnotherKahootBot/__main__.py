@@ -39,20 +39,11 @@ parser.add_argument(
     )
 )
 
-class LogDirAction(argparse.Action):
-    def __call__(self, parser, namespace, values, option_string=None):
-
-        logdir = values[0] if isinstance(values, list) else values
-
-        os.makedirs(logdir, exist_ok=True)
-        
-        setattr(namespace, self.dest, logdir)
 
 
 parser.add_argument(
     "-l", "--log-dir",
     default="/tmp/just_another_kahoot_bot",
-    action=LogDirAction,
     type=str,
     help="Path to a file to write logs. If not specified, logs go to stdout."
 )
@@ -81,7 +72,7 @@ def main():
     setup_logger()
     init_events()
     config = Config.from_mapping(bind=[f"{args.address}:{args.port}"])
-    asyncio.run(hypercorn.asyncio.serve(app, config)) 
+    asyncio.run(hypercorn.asyncio.serve(app, config))
 
 if __name__ == "__main__":
     main()

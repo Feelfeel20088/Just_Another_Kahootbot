@@ -11,9 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 def setup_logger():
-    logger.handlers.clear()
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-
+    
     # StreamHandler for logging to the console
     ch = logging.StreamHandler()
     if args == 0:
@@ -28,11 +27,14 @@ def setup_logger():
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    
-    log_file = Path(os.path.join(log_dir, "logs"))
+    os.makedirs(log_dir, exist_ok=True)
+
+    log_file = Path(os.path.join(log_dir, "logs.log"))
     log_file.touch(exist_ok=True)
     
-    fh = logging.FileHandler(log_file, mode='w')
+    fh = logging.FileHandler(log_file, mode='a')
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
+
     logger.addHandler(fh)
+    
