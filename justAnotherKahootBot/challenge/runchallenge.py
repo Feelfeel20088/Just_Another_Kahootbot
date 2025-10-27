@@ -1,12 +1,4 @@
-import subprocess
 import base64
-import re
-import os
-from justAnotherKahootBot.config.state import args 
-
-# const
-logdir = args.log_dir
-
 class Challenge:
 
 
