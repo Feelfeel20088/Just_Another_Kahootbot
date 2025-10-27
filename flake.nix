@@ -56,8 +56,6 @@
             pkgs.python313Packages.orjson
             pkgs.python313Packages.pytest
             pkgs.python313Packages.configargparse
-            pkgs.nodejs
-            pkgs.yarn
 
             # linter
             # pkgs.python313Packages.ruff
