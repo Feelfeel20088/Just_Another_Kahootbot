@@ -117,7 +117,7 @@ def init_events():
                         and attr not in (BaseModel, Event)
                         and Event not in attr.__bases__
                     ):
-                        logger.debug(f"Loading event class {attr} into the map.")
+                        logger.info(f"Loading event class {attr} into the map.")
                         if not "channel" in attr.model_fields:
                             logger.warning(f"warning: class {attr} does not have a channel type... skiping")
                             continue
