@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 def setup_logger():
+    logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
     
     # StreamHandler for logging to the console
     ch = logging.StreamHandler()
-    if args == 0:
+    if verbose_level == 0:
         ch.setLevel(logging.CRITICAL)
     elif verbose_level == 1:
         ch.setLevel(logging.ERROR)
