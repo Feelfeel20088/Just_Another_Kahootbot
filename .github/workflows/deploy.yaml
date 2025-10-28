@@ -3,12 +3,10 @@ name: Build & Deploy Docker Container (CI/CD)
 on:
   push:
     branches:
-      - master
-      - dev
+      - "**"
   pull_request:
     branches:
-      - master
-      - dev
+      - "**"
 
 jobs:
   build-and-push:
@@ -21,37 +19,33 @@ jobs:
         uses: cachix/install-nix-action@v26
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-
+          
+      - name: Test image
+        run: nix develop --command pytest -v
 
       - name: Build nix image
         run: nix --extra-experimental-features 'flakes nix-command' build .#dockerImage
-      
+
       - name: Load nix image
         run: docker load < result
-
-      - name: test
-        run: docker images
 
       - name: Set Docker tag
         id: docker_tag
         run: |
-            if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
-                echo "tag=latest" >> $GITHUB_OUTPUT
-            elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-                echo "tag=dev" >> $GITHUB_OUTPUT
-            else
-                # fallback for feature branches
-                BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}" | tr '/' '-')
-                echo "tag=${BRANCH_NAME}" >> $GITHUB_OUTPUT
-            fi
-
+          if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+              echo "tag=latest" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+              echo "tag=dev" >> $GITHUB_OUTPUT
+          fi
 
 
       - name: Tag Docker image
         run: docker tag just_another_kahoot_bot:latest ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
-          
+
       - name: Log in to Docker Hub
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
         run: echo "${{ secrets.DOCKERHUBPASS }}" | docker login -u "${{ secrets.DOCKERHUBUSER }}" --password-stdin
 
       - name: Push Docker image
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
         run: docker push ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
