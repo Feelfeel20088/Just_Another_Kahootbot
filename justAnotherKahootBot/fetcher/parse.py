@@ -21,11 +21,11 @@ class QuizTypes(Enum):
 
 
 class QuestionParserProtocol(Protocol):
-    def correct(self) -> int:
+    def correct(self) -> List[int]:
         """Return the index of the correct choice"""
         ...
 
-    def incorrect(self) -> int:
+    def incorrect(self) -> List[int]:
         """Return an index of an incorrect choice"""
         ...
 
@@ -75,14 +75,14 @@ class QuizParser(BaseQuestionParser, QuestionParserProtocol):
     def __init__(self, q: Question):
         super().__init__(q)
 
-    def correct(self) -> int:
-        return next((i for i, c in enumerate(self._question.choices) if c.correct), None)
+    def correct(self) -> List[int]:
+        return [i for i, c in enumerate(self._question.choices) if c.correct]
 
-    def incorrect(self) -> int:
-        return next((i for i, c in enumerate(self._question.choices) if not c.correct), None)
+    def incorrect(self) -> List[int]:
+        return [i for i, c in enumerate(self._question.choices) if not c.correct]
 
     def random(self) -> int:
-        return random.randint(0,3)
+        return random.randint(0,len(self.q.choices))
 
     def question_text(self) -> str:
         return self._question.question
