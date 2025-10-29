@@ -24,16 +24,7 @@ class FetcherErrorType(Enum):
 
 
 class FetcherError(Exception):
-    """
-    Fetcher-related errors.
-
-    Attributes:
-        message (str): Human-readable error message.
-        original_exception (Exception, optional): Original exception that caused this error.
-    """
-
     def __init__(self, type: FetcherErrorType, reason: str, /, original_exception: Exception = None):
-        super().__init__(reason)
         self.type = type
         self.original_exception = original_exception
 
@@ -43,29 +34,25 @@ class FetcherError(Exception):
                     raise TypeError(
                         "FetcherErrorType.NETWORK_ERROR requires original_exception to be a Httpx HTTPError"
                     )
-                return f"{self.reason} (caused by {repr(original_exception)})"
+                self.reason = f"{reason} (caused by {repr(original_exception)})"
+
             case FetcherErrorType.PARSE_ERROR:
-                
                 if not isinstance(original_exception, pydantic.ValidationError):
                     raise TypeError(
                         "FetcherErrorType.PARSE_ERROR requires original_exception to be a Pydantic ValidationError"
                     )
-                
-                if args.verbosity >= 3:
-                    include_input_flag = True
-                else:
-                    include_input_flag = False
+                include_input_flag = args.verbosity >= 3
+                self.reason = (
+                    f"{reason}\n"
+                    f"Amount of Validation Errors: {original_exception.error_count()}\n"
+                    f"(caused by: {original_exception.errors(include_context=True, include_input=include_input_flag, include_url=False)})"
+                )
 
-                self.reason = f"{reason}\nAmount of Validation Errors: {original_exception.error_count()}\n(caused by: {original_exception.errors(
-                    include_context=True, 
-                    include_input=include_input_flag,
-                    include_url=False
-                )})"
-        
+        super().__init__(self.reason)
 
-
-    def __str__(self): 
+    def __str__(self):
         return self.reason
+
 
 
 
@@ -92,7 +79,7 @@ class Fetcher:
     async def fetch_all(self, uuid: str, retry: int = 1, retry_increment: int = 5, headers: dict = None):
         """"""
         if headers is None:
-            headers = cls._get_headers()
+            headers = Fetcher._get_headers()
          
         async with httpx.AsyncClient() as client:
             for r in range(retry):
