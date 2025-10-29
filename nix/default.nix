@@ -20,6 +20,7 @@ python313Packages.buildPythonApplication {
 
   buildInputs = (with python313Packages; [
     pytest
+    pytest-asyncio
   ]);
 
   propagatedBuildInputs = (with python313Packages; [
@@ -28,10 +29,13 @@ python313Packages.buildPythonApplication {
     quart
     pydantic
     orjson
-    configargparse
-    pytest
-    
+    configargparse  
   ]);
+
+  checkPhase = ''
+    pytest -v --asyncio-mode=auto
+  '';
+
 
   # for docker
   postInstall = ''

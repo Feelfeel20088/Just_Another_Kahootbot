@@ -19,10 +19,8 @@ jobs:
         uses: cachix/install-nix-action@v26
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-          
-      - name: Test image
-        run: nix develop --command pytest -v
 
+      # testing is done inside nix. see nix/default.nix
       - name: Build nix image
         run: nix --extra-experimental-features 'flakes nix-command' build .#dockerImage
 
