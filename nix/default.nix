@@ -17,12 +17,7 @@ python313Packages.buildPythonApplication {
   # };
   
   src = ../.;
-
-  buildInputs = (with python313Packages; [
-    pytest
-    pytest-asyncio
-  ]);
-
+  
   propagatedBuildInputs = (with python313Packages; [
     httpx
     websockets
@@ -32,9 +27,10 @@ python313Packages.buildPythonApplication {
     configargparse  
   ]);
 
-  checkPhase = ''
-    pytest -v --asyncio-mode=auto
-  '';
+  nativeCheckInputs = (with python313Packages; [
+    pytest
+    pytest-asyncio
+  ]);
 
 
   # for docker
@@ -43,6 +39,12 @@ python313Packages.buildPythonApplication {
     cp -r . $out/app/
     
   '';
+
+  checkPhase = ''
+    pytest -v --asyncio-mode=auto
+  '';
+  
+  doCheck = true;
   
   meta = {
     description = "Just_Another_Kahoot_Bot is a highly scalable, single-threaded bot for Kahoot, built for deployment on Kubernetes. Unlike traditional bots that rely on Selenium, this bot uses raw WebSockets, providing better performance, stability, and reliability. The bot can flood Kahoot games, answer questions correctly, and remain stealthy.";
