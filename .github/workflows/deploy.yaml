@@ -22,7 +22,7 @@ jobs:
 
       # testing is done inside nix. see nix/default.nix
       - name: Build nix image
-        run: nix --extra-experimental-features 'flakes nix-command' build .#dockerImage
+        run: nix --extra-experimental-features 'flakes nix-command' build --option sandbox false .#dockerImage
 
       - name: Load nix image
         run: docker load < result
