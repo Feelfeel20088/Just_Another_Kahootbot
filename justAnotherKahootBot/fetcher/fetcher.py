@@ -120,4 +120,4 @@ class Fetcher:
         self.__raw = model
     
     def get_parser(self, question_index: int):
-        return QParsers.parse(self.__raw.questions[question_index].question_type)
+        return QParsers.parse(self.__raw.questions[question_index].question_type, self.__raw.questions[question_index])

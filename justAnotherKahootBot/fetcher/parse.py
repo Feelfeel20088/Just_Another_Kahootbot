@@ -82,7 +82,7 @@ class QuizParser(BaseQuestionParser, QuestionParserProtocol):
         return [i for i, c in enumerate(self._question.choices) if not c.correct]
 
     def random(self) -> int:
-        return random.randint(0,len(self.q.choices))
+        return random.randrange(len(self._question.choices))
 
     def question_text(self) -> str:
         return self._question.question
