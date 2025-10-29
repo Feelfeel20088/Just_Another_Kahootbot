@@ -3,7 +3,6 @@ from pathlib import Path
 import os
 from justAnotherKahootBot.config.state import args 
 
-log_dir = args.log_dir
 verbose_level = args.verbose
 
 logger = logging.getLogger(__name__)
