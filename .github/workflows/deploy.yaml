@@ -32,8 +32,9 @@ jobs:
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
               echo "tag=latest" >> $GITHUB_OUTPUT
-          elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
-              echo "tag=dev" >> $GITHUB_OUTPUT
+          else
+              SAFE_TAG=$(echo "${GITHUB_REF#refs/heads/}" | tr '/' '-')
+              echo "tag=${SAFE_TAG}" >> $GITHUB_OUTPUT
           fi
 
 
@@ -41,9 +42,7 @@ jobs:
         run: docker tag just_another_kahoot_bot:latest ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
 
       - name: Log in to Docker Hub
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
         run: echo "${{ secrets.DOCKERHUBPASS }}" | docker login -u "${{ secrets.DOCKERHUBUSER }}" --password-stdin
 
       - name: Push Docker image
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev'
         run: docker push ${{ secrets.DOCKERHUBUSER }}/just_another_kahoot_bot:${{ steps.docker_tag.outputs.tag }}
