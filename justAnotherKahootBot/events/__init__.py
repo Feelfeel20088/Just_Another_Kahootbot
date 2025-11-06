@@ -93,7 +93,7 @@ event_classes: Dict[str, Dict[Type[BaseModel], Set[str]]] = defaultdict(dict)
 def init_events():
 
     events_dir = os.path.dirname(__file__) 
-
+    print(__file__)
     for root, _, files in os.walk(events_dir):
 
         for filename in files:
