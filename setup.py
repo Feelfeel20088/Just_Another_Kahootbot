@@ -8,9 +8,10 @@ setup(
         "quart==0.20.0",
         "websockets==15.0.1",
         "httpx==0.28.1",
-        "hypercorn==0.17.3",
+        "pydantic==2.11.1",
         "orjson==3.10.16",
-        "pydantic==2.11.1"
+        "configargparse==1.7.1",
+        "hypercorn==0.17.3",
     ],
     entry_points={
         'console_scripts': [
