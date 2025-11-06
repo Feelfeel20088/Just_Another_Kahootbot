@@ -21,7 +21,7 @@ containerPort: 8000
 # with 500mi or you think 500mi is to much.
 resources:
   limits:
-    memory: "500Mi"
+    memory: "8G"
     cpu: "1"
 
 # put whatever you want for your pod port
