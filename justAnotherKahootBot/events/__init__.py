@@ -93,7 +93,7 @@ event_classes: Dict[str, Dict[Type[BaseModel], Set[str]]] = defaultdict(dict)
 def init_events():
 
     events_dir = os.path.dirname(__file__) 
-    print(__file__)
+
     for root, _, files in os.walk(events_dir):
 
         for filename in files:
@@ -117,7 +117,7 @@ def init_events():
                         and attr not in (BaseModel, Event)
                         and Event not in attr.__bases__
                     ):
-                        logger.info(f"Loading event class {attr} into the map.")
+                        logger.debug(f"Loading event class {attr} into the map.")
                         if not "channel" in attr.model_fields:
                             logger.warning(f"warning: class {attr} does not have a channel type... skiping")
                             continue
