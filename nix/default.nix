@@ -45,6 +45,7 @@ python313Packages.buildPythonApplication {
   '';
   
   doCheck = true;
+  format = "setuptools";
   
   meta = {
     description = "Just_Another_Kahoot_Bot is a highly scalable, single-threaded bot for Kahoot, built for deployment on Kubernetes. Unlike traditional bots that rely on Selenium, this bot uses raw WebSockets, providing better performance, stability, and reliability. The bot can flood Kahoot games, answer questions correctly, and remain stealthy.";
