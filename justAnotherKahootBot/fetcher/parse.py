@@ -17,19 +17,28 @@ class QuizTypes(Enum):
     feedback = "feedback"
     pin_it = "pin_it"
     quiz = "quiz"
+    true_or_false = "true_or_false" # need to get actual value
 
 
 
 class QuestionParserProtocol(Protocol):
-    def correct(self) -> List[int]:
+    def correct_index(self) -> List[int]:
         """Return the index of the correct choice"""
         ...
 
-    def incorrect(self) -> List[int]:
+    def incorrect_index(self) -> List[int]:
         """Return an index of an incorrect choice"""
         ...
 
-    def random(self) -> int:
+    def correct(self) -> Optional[int | str]:
+        """Return an value of an incorrect choice"""
+        ...
+
+    def incorrect(self) -> Optional[int | str]:
+        """Return the value of the correct choice"""
+        ...
+
+    def random_index(self) -> Optional[int]:
         """Return a random choice index"""
         ...
 
@@ -50,38 +59,44 @@ class BaseQuestionParser:
         self._question = q
     
     def get_question_type(self) -> Optional[str]:
-        return self._question.question_type if self._question and self._question.question_type is not None else None
-
+        return self._question.question_type
+    
     def get_time(self) -> Optional[int]:
-        return self._question.time if self._question and self._question.time is not None else None
+        return self._question.time
 
     def get_points(self) -> Optional[bool]:
-        return self._question.points if self._question and self._question.points is not None else None
+        return self._question.points 
 
     def get_points_multiplier(self) -> Optional[int]:
-        return self._question.pointsMultiplier if self._question and self._question.pointsMultiplier is not None else None
+        return self._question.pointsMultiplier
 
     def get_resources(self) -> Optional[str]:
-        return self._question.resources if self._question and self._question.resources is not None else None
+        return self._question.resources
 
     def get_question_format(self) -> Optional[int]:
-        return self._question.questionFormat if self._question and self._question.questionFormat is not None else None
+        return self._question.questionFormat
 
     def get_media(self) -> Optional[List]:
-        return self._question.media if self._question and self._question.media is not None else None
+        return self._question.media
         
-
+# This parser handles standard quiz questions, including True/False style questions.
 class QuizParser(BaseQuestionParser, QuestionParserProtocol):
     def __init__(self, q: Question):
         super().__init__(q)
 
-    def correct(self) -> List[int]:
+    def correct_index(self) -> List[int]:
         return [i for i, c in enumerate(self._question.choices) if c.correct]
 
-    def incorrect(self) -> List[int]:
+    def incorrect_index(self) -> List[int]:
         return [i for i, c in enumerate(self._question.choices) if not c.correct]
+    
+    def correct(self):
+        return self.correct_index()
+    
+    def incorrect(self):
+        return self.incorrect_index()
 
-    def random(self) -> int:
+    def random_index(self) -> Optional[int]:
         return random.randrange(len(self._question.choices))
 
     def question_text(self) -> str:
@@ -89,7 +104,7 @@ class QuizParser(BaseQuestionParser, QuestionParserProtocol):
 
     def has_choices(self) -> bool:
         return True
-    
+
 class ScaleParser(BaseQuestionParser):
     def parse(self, data: Question) -> dict:
         pass
@@ -97,6 +112,32 @@ class ScaleParser(BaseQuestionParser):
 class WordCloudParser(BaseQuestionParser):
     def parse(self, data: Question) -> dict:
         pass
+
+class OpenEndedParser(BaseQuestionParser, QuestionParserProtocol):
+    def __init__(self, q: Question):
+        super().__init__(q)
+
+    def correct_index(self) -> List[int]:
+        return [0]
+
+    def incorrect_index(self) -> List[int]:
+        return None
+    
+    def correct(self) -> Optional[int | str]:
+        return self._question.choices[0].answer
+
+    def incorrect(self) -> List[int]:
+        return None
+
+    def random_index(self) -> Optional[int]:
+        return random.randrange(len(self._question.choices))
+
+    def question_text(self) -> str:
+        return self._question.question
+
+    def has_choices(self) -> bool:
+        return True
+
 
 class ContentParser(BaseQuestionParser):
     def parse(self, data: Question) -> Any:
@@ -122,7 +163,7 @@ class MultipleSelectPollParser(BaseQuestionParser):
     def parse(self, data: Question) -> Any:
         pass
 
-
+# Impossible to find in response payload. Server randomly generates.
 class JumbleParser(BaseQuestionParser):
     def parse(self, data: Question) -> Any:
         pass

@@ -118,6 +118,20 @@ class Fetcher:
             )
         
         self.__raw = model
-    
+
+        return self
+
     def get_parser(self, question_index: int):
         return QParsers.parse(self.__raw.questions[question_index].question_type, self.__raw.questions[question_index])
+    
+    def get_formated_raw_json(self):
+        print(self.__raw.model_dump_json(indent=2))
+
+
+f = Fetcher()
+
+async def main():
+    await f.fetch_all("4ba0ed29-8dae-43a8-846b-f0fb5f05529f")
+    f.get_formated_raw_json()
+
+asyncio.run(main())

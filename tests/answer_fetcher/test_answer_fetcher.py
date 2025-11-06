@@ -14,8 +14,8 @@ async def test_fetch_and_parser():
     # Check basic parser functionality
     assert parser is not None
     assert parser.get_question_type() == "quiz"
-    assert parser.correct() == [2]
-    assert parser.incorrect() == [0, 1, 3]
-    assert parser.random() in [0, 1, 2, 3]
+    assert parser.correct_index() == [2]
+    assert parser.incorrect_index() == [0, 1, 3]
+    assert parser.random_index() in [0, 1, 2, 3]
     assert parser.question_text() == "What is Jeff Bezos´s Net worth"
     assert parser.has_choices() is True
