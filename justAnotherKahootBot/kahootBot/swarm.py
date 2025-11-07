@@ -147,7 +147,7 @@ class Swarm:
             logger.debug("Time Starting...")
             # Main loop to check if the swarm is still alive
             while self.isAlive() and not self.stop:
-                logger.info("time remaining: " + str(self.getTimeRemaining()) + "Amount of bots: " + str(len(self.tasks)))
+                logger.debug(f"time remaining for swarm {self.id}: {str(self.getTimeRemaining())} Amount of bots: " + str(len(self.tasks)))
                 await asyncio.sleep(10)
 
             await self.cleanUp()
