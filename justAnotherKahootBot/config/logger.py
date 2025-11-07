@@ -16,13 +16,17 @@ def setup_logger(log_dir: str = None):
     # StreamHandler
     ch = logging.StreamHandler()
     if args.verbose == 0:
-        ch.setLevel(logging.CRITICAL)
+        ch.setLevel(logging.INFO)
+        ch.addFilter(lambda record: record.levelno in (logging.INFO, logging.CRITICAL))
     elif args.verbose == 1:
-        ch.setLevel(logging.ERROR)
+        ch.setLevel(logging.INFO)
+        ch.addFilter(lambda record: record.levelno in (logging.INFO, logging.ERROR, logging.CRITICAL))
     elif args.verbose == 2:
-        ch.setLevel(logging.WARNING)
+        ch.setLevel(logging.INFO)
+        ch.addFilter(lambda record: record.levelno in (logging.INFO, logging.WARNING, logging.ERROR, logging.CRITICAL))
     elif args.verbose == 3:
         ch.setLevel(logging.DEBUG)
+
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 

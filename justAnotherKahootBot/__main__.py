@@ -30,12 +30,15 @@ parser.add_argument(
     "-v", "--verbose",
     type=int,
     choices=range(0, 4),
+    default=0,
     help=(
         "Enable verbose logging:\n"
-        "  0: Silent\n"
-        "  1: Logs and fatal\n"
-        "  2: Logs, warnings, and fatal\n"
-        "  3: Debug mode"
+        "  0: Info and Critical\n"
+        "  1: Info, Non-Fatal Errors, and Critical Errors\n"
+        "  2: Info, Warnings, Non-Fatal Errors, and Critical Errors\n"
+        "  3: Debug mode (everything)\n\n"
+        "The option you choose will not affect the logs written to the log file, "
+        "which by default is placed in /tmp/just_another_kahoot_bot."
     )
 )
 
