@@ -43,6 +43,7 @@
               name = "just_another_kahootbot-docker-root";
               paths = [
                 default
+                pkgs.cacert
               ];
               pathsToLink = [ "/app" "/bin" ];
             };
