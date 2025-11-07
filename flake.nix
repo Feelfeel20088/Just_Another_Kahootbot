@@ -44,6 +44,7 @@
               paths = [
                 default
                 pkgs.cacert
+                pkgs.bash
               ];
               pathsToLink = [ "/app" "/bin" ];
             };
