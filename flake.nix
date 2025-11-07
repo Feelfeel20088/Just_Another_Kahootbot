@@ -34,7 +34,7 @@
             # };
 
             config = {
-              Cmd = [ "just_another_kahootbot" "serve" ];
+              Cmd = [ "just_another_kahootbot" "-v 3" "serve" ];
               WorkingDir = "/app";
               Env = ["SSL_CERT_FILE=${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt"]; 
             };
