@@ -161,10 +161,12 @@ class KahootBot:
                     await compare_models_to_ingress_json(message, self)
                 except FatalError as e:
                     logger.debug(f"Caught Swarm Fatel exception: {e}")
+                    await self.errorHandler.put((self, e))
                 except SwarmHandler as e:
                     await self.errorHandler.put((self, e))
                 except Exception as e:
                     logger.exception("found exception in model hander")
+                    
                 
 
         
@@ -191,8 +193,8 @@ class KahootBot:
     async def crasher(self) -> None: 
         try:
             while True:
-                logger.debug(self.payloads.__crash__(self.id))
-                await self.wsocket.send(self.payloads.__crash__(self.id)) 
+                logger.debug("debug crash")
+                await self.wsocket.send(self.payloads.__crash__(self.clientInfo.get_id())) 
                 await asyncio.sleep(1)
         except asyncio.CancelledError:
             return

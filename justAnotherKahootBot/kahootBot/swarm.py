@@ -46,29 +46,39 @@ class Swarm:
         if self.amount == 1: 
             instance = KahootBot(self.gameid, self.nickname, self.crash, self.queue)
         else: 
-            instance = KahootBot(self.gameid, f"{self.nickname}{secrets.token_hex(4)}", self.crash, self.queue)
+            instance = KahootBot(self.gameid, f"{self.nickname}{secrets.token_hex(6)}", self.crash, self.queue)
         
         task = instance.startBot()
         self.instancetotask[instance] = task
         self.tasks.append(task)
 
 
-    def killSwarm(self, error: SwarmHandler):
+    def killSwarm(self, error: FatalError):
         """ends the swarm"""
         self.clean_execution = error
         self.stop = True
 
-
     async def stopBot(self, instance: KahootBot, task: asyncio.Task):
         """stops a bot"""
-
         task.cancel()
 
         await task
-        logger.debug(f"Bot {instance.get_nickname()} has been removed on the swarm side.")
+        
+        logger.debug(f"Bot {instance.get_nickname()} has been stopped on the swarm side.")
+
+
+    async def restart_bot(self, instance: KahootBot, task: asyncio.Task): 
+        
+        await self.stopBot(instance, task)
+
         self.tasks.remove(task)
 
         del self.instancetotask[instance]
+
+        logger.debug(f"Bot {instance.get_nickname()} has been removed on the swarm side.")
+
+        self.startNewBot()
+
 
     async def cleanUp(self, timeout: float = 5.0):
         """Cancel all running tasks with timeout and diagnostics."""

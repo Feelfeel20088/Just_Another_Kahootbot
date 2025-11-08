@@ -152,11 +152,11 @@ async def compare_models_to_ingress_json(json: str, instance):
             await event.handle(instance)
             return
         
-    logger.error(
-        f"No suitable model to parse the provided JSON: {json}. "
-        "If you're seeing this error, you might want to create an issue on GitHub "
-        "or, even better, fix it yourself and submit a merge."
-    )
+    # logger.error(
+    #     f"No suitable model to parse the provided JSON: {json}. "
+    #     "If you're seeing this error, you might want to create an issue on GitHub "
+    #     "or, even better, fix it yourself and submit a merge."
+    # )
     # raise UnknownJsonModelException(
     #     f"No suitable model to parse the provided JSON: {json}. "
     #     "If you're seeing this error, you might want to create an issue on GitHub "
