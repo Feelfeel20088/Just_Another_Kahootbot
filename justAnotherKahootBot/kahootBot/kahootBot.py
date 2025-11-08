@@ -32,6 +32,9 @@ class KahootBot:
         self.childTasks = []
         self.timeout = 10.0 
 
+    def get_nickname(self):
+        return self.clientInfo.get_nickname();
+
     def startBot(self) -> None:
         """Starts a bot in a task"""
         return asyncio.create_task(self.connect())

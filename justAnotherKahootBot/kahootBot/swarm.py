@@ -65,7 +65,7 @@ class Swarm:
         task.cancel()
 
         await task
-        logger.debug(f"Bot {instance.nickname} has been removed on the swarm side.")
+        logger.debug(f"Bot {instance.get_nickname()} has been removed on the swarm side.")
         self.tasks.remove(task)
 
         del self.instancetotask[instance]
