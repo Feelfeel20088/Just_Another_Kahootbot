@@ -3,6 +3,8 @@ from .bases import ServicePlayer, Ext
 from typing import List, Optional, Union
 import orjson
 from justAnotherKahootBot.fetcher import AnswerBuilder, Fetcher
+import time
+from justAnotherKahootBot.config.logger import logger
 
 class Video(BaseModel):
     startTime: int
@@ -62,9 +64,23 @@ class GameBlock(ServicePlayer):
         return values
 
     async def handle(self, instance):
+
+        t = time.time()
+
         fetcher: Fetcher = instance.get_fetcher()
+
         parser = fetcher.get_parser(self.data.content.gameBlockIndex)
-        AnswerBuilder.set_choice(parser.correct())
-        AnswerBuilder.set_question_index(self.data.content.gameBlockIndex)
+
+        answer = AnswerBuilder.from_parser(parser).build()
+
+        await instance.push_answer(answer)
+        
+        elapsed = time.time() - t
+        
+        logger.debug(
+            f"Bot '{instance.get_nickname()}' sent answer in {elapsed:.4f}s | "
+            f"Choice: {self.data.content.choice} | Type: {self.data.content.type}"
+        )
+
         
 

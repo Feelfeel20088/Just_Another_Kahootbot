@@ -161,7 +161,7 @@ class Swarm:
             self.watchdog = asyncio.create_task(self.watchDog())
 
             if uuid is not None:
-                asyncio.create_task(self.fetcher_bootstrap())
+                asyncio.create_task(self.fetcher_bootstrap(uuid))
 
             
             for _ in range(int(amount)):

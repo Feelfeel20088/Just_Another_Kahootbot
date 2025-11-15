@@ -30,7 +30,7 @@ async def createSwarm():
 
     context.addSwarm(swarm.getSwarmId(), swarm)
     
-    swarm.createSwarm(int(gamepin), nickname, crash, amount, ttl) # context will return instead of waiting
+    swarm.createSwarm(int(gamepin), nickname, crash, amount, ttl, "075c2178-230f-498c-b5a5-f03d94e9160e") # context will return instead of waiting
     
     return jsonify({"message": "Swarm created and tasks started", "swarmid": swarm.getSwarmId()}), 200
 

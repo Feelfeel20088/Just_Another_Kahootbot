@@ -43,6 +43,12 @@ class KahootBot:
     def startBot(self) -> None:
         """Starts a bot in a task"""
         return asyncio.create_task(self.connect())
+    
+    async def push_answer(self, answer: Answer):
+        
+        # KahootBot ownes websocket
+        await answer.send_answer(self.wsocket, self.clientInfo.get_id(), self.clientInfo.get_ack())
+
 
     # async def watchDog(self):
     #     try: 

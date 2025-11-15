@@ -1,4 +1,5 @@
 from justAnotherKahootBot.kahootBot.client_info import ClientInfo
+from justAnotherKahootBot.kahootBot.payloads import Payloads
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
 import orjson
@@ -21,12 +22,26 @@ class DataPayload(BaseModel):
     content: str  # JSON stringified Content model
 
 
-class KahootMessage(BaseModel):
+class Answer(BaseModel):
     id: str
     channel: str
     data: DataPayload
     clientId: str
     ext: Dict[str, Any]
+
+    
+    async def send_answer(self, ws, id, act):
+        """Send a built Kahoot answer through the websocket."""
+        
+        await self.__generic_heartbeat(ws, id, act)
+
+        await ws.send(orjson.dumps(self.model_dump()).decode())
+
+    @classmethod
+    async def __generic_heartbeat(cls, ws, id: int, act: int):
+
+        await ws.send(Payloads.__heartBeat__(id, act))
+
 
 
 
@@ -47,56 +62,6 @@ class KahootMessage(BaseModel):
 #     "clientId": self.clientid,
 #     "ext": {}
 # }
-
-class ClientInfo:
-    __nickname: str
-    __gameid: str
-    __clientid: str
-    __question_index: int = -1
-    __ack: int = 2
-    __id: int = 6
-    
-
-    # getter / setters
-
-    def get_nickname(self) -> str:
-        return self.__nickname
-
-    def set_nickname(self, value) -> str:
-        self.__nickname = value
-
-    def set_gameid(self, value: str):
-        self.__gameid = value
-
-    def get_gameid(self) -> str:
-        return self.__gameid
-
-    
-    def set_gameid(self, value: str):
-        self.__gameid = value
-
-    
-    def get_clientid(self) -> str:
-        return self.__clientid
-
-    
-    def set_clientid(self, value: str):
-        self.__clientid = value
-
-    def get_question_index(self) -> int:
-        self.__question_index =+ 1
-        return self.__question_index
-
-
-    def get_ack(self) -> int:
-        self.__ack =+ 1
-        return self.__ack
-
-
-    def get_id(self) -> int:
-        self.__id =+ 1
-        return self.__id
-
 
 class AnswerBuilder:
     def __init__(self, client_info: ClientInfo):
@@ -136,7 +101,7 @@ class AnswerBuilder:
 
         return self
 
-    def build(self) -> KahootMessage:
+    def build(self) -> Answer:
         # Must have type, choice, question_index from either manual or parser
         if self._type is None or self._choice is None or self._question_index is None:
             raise ValueError("AnswerBuilder is missing required fields")
@@ -155,7 +120,7 @@ class AnswerBuilder:
             content=orjson.dumps(content.model_dump()).decode("utf-8")
         )
 
-        return KahootMessage(
+        return Answer(
             id=str(self._client_info.get_id()),
             channel="/service/controller",
             data=data,
@@ -180,25 +145,6 @@ class AnswerBuilder:
 #
 # Only after receiving the gameBlock should you attempt to build and send your answer.
 
-class Answer:
-
-    @classmethod
-    async def send_answer(ws, context: ClientInfo, answer_data: KahootMessage):
-        """Send a built Kahoot answer through the websocket."""
-        t = time.time()
-        
-        await ws.send(orjson.dumps(answer_data.model_dump()).decode())
-
-        elapsed = time.time() - t
-        
-        logger.debug(
-            f"Bot '{context.get_nickname()}' sent answer in {elapsed:.4f}s | "
-            f"Choice: {answer_data.data.content.choice} | Type: {answer_data.data.content.type}"
-        )
-    @classmethod
-    async def generic_heartbeat(ws, context: ClientInfo, answer_data: KahootMessage):
-
-        await self.ws.send(self.payloads.__heartBeat__(self.clientInfo.get_id(), self.clientInfo.get_act()))
 
 
     

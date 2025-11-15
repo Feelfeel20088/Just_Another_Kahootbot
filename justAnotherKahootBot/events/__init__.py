@@ -145,12 +145,16 @@ async def compare_models_to_ingress_json(json: str, instance):
         
         json_keys = set(convert_ingress_json_keys_to_list(json))
         
-        # print("model keys: \n", model_keys, "\n json keys: \n", json_keys, "\n\n\n\n\n")
         if model_keys == json_keys:
-            event = model.model_validate(json)
-            # debug_class_use_times[type(event)] += 1  
+            print("model keys: \n", model_keys, "\n json keys: \n", json_keys, "\n\n\n\n\n")
+            try:
+                event = model.model_validate(json)
+            except Exception as e:
+                logger.error(f"Failed to validate JSON with model {model.__name__}: {json}\nException: {e}")
+                raise
             await event.handle(instance)
             return
+
         
     # logger.error(
     #     f"No suitable model to parse the provided JSON: {json}. "
