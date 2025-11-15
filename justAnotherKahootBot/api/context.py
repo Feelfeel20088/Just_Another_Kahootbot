@@ -13,8 +13,8 @@ class Context:
             cls._instance._swarm_info = {}
         return cls._instance
 
-    def addSwarm(self, id, swarm):
-        self._swarm_info[id] = swarm
+    def getSwarmList(self):
+        return list(self._swarm_info.values())
 
     def removeSwarm(self, id):
         if id in self._swarm_info:

@@ -30,7 +30,7 @@ class Swarm:
 
     def getSwarmId(self):
         """Gets the Swarms uuid"""
-        return self.id
+        return str(self.id)
 
     def isAlive(self) -> bool:
         """Check if the swarm is still alive based on TTL."""

@@ -11,11 +11,11 @@ context = Context()
 async def status():
     """Returns the status of all active swarms. also will clean up dead swarms."""
     swarm_info = []
-    for index, swarm in enumerate(context.getSwarmList()):
+    for s_index, swarm in enumerate(context.getSwarmList()):
 
         swarm_info.append({
             "swarm_uuid": swarm.getSwarmId(),
-            "swarm": index,
+            "swarm": s_index,
             "time_remaining": swarm.getTimeRemaining(),
             "active_bots": len(swarm.tasks)
         })
