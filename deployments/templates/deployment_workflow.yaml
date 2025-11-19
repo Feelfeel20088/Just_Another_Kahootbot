@@ -1,0 +1,127 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: nix-docker-builder-and-pusher
+  namespace: argo
+spec:
+  arguments:
+    parameters:
+      - name: branch
+        value: master
+
+  entrypoint: nix-docker-pipeline
+
+  templates:
+    - name: nix-docker-pipeline
+      dag:
+        tasks:
+          - name: build
+            template: build-nix-image
+            arguments:
+              parameters:
+                - name: branch
+                  value: "{{workflow.parameters.branch}}"
+
+          - name: load
+            template: load-nix-image
+            dependencies: [build]
+            arguments:
+              artifacts:
+                - name: nix-output
+                  from: "{{tasks.build.outputs.artifacts.nix-output}}"
+
+    - name: build-nix-image
+      inputs:
+        parameters:
+          - name: branch
+      script:
+        image: nixos/nix
+        command: ["/bin/sh"]
+        source: |
+          git clone --branch "{{inputs.parameters.branch}}" \
+            https://github.com/Feelfeel20088/Just_Another_Kahootbot repo
+
+          echo "Building Nix Docker image..."
+          nix --extra-experimental-features 'flakes nix-command' \
+            build --option sandbox false ./repo/#dockerImage
+
+          cp -L "$(readlink -f ./result)" ./nix_image.tar.gz
+
+      outputs:
+        artifacts:
+          - name: nix-output
+            path: ./nix_image.tar.gz
+
+    - name: load-nix-image
+      inputs:
+        parameters:
+          - name: branch
+      container:
+        image: quay.io/buildah/stable:latest
+        command: ["/bin/sh", "-c"]
+        args: |
+          buildah pull docker-archive:/mnt/artifacts/nix_image.tar.gz
+      inputs:
+        artifacts:
+          - name: nix-output
+            path: /mnt/artifacts/nix_image.tar.gz
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: github-es
+  namespace: argo-events
+spec:
+  github:
+    repo-events:
+      owner: Feelfeel20088
+      repository: Just_Another_Kahootbot
+      events:
+        - push
+      webhook:
+        port: "12000"
+        endpoint: /hook
+        method: POST
+      secret:
+        name: github-secret
+        key: webhook
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: github-sensor
+  namespace: argo-events
+spec:
+  serviceAccountName: argo-events-sa
+  eventBusName: default
+  dependencies:
+    - name: github-push
+      eventSourceName: github-es
+      eventName: repo-events
+
+  triggers:
+    - template:
+        name: github-workflow-trigger
+        k8s:
+          namespace: argo
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: nix-docker-builder-and-pusher
+              spec:
+                workflowTemplateRef:
+                  name: nix-docker-builder-and-pusher
+                arguments:
+                  parameters:
+                    - name: branch
+                      value: "{{ (events.github-push.body.ref | split '/')[-1] }}"

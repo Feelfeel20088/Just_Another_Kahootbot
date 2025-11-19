@@ -31,6 +31,19 @@ service:
 internalService:
   enabled: true
 
-# externalService:
-#   enabled: true
-#   nodePort: 30005
+argo:
+  enabled: true                     # turn Argo workflows on/off
+  branch: "master"                   # default build branch
+  repoUrl: "https://github.com/your/repo.git"
+  # List of registries where the built image should be pushed
+  dockerRegistries: 
+   - feelfeel200088/just_another_kahoot_bot
+   - 
+    #harbor-registry.harbor.svc.cluster.local:5000/kahoot_bot
+
+  # WARNING: creating the docker secret in the helm chart values is not recommended. 
+  # Use the argo server UI or another secure way to store and accses your credentials. 
+  createDockerSecret: false           # If true, Helm creates the secret. If not true you provide the secret.
+  dockerSecretName: dockerhub-secret # Name of the secret to create. If not true this is the secret that you have allready created.
+  dockerUsername: ""        # Only used if creating
+  dockerPassword: ""        # Only used if creating
