@@ -125,3 +125,4 @@ spec:
                   parameters:
                     - name: branch
                       value: "{{ (events.github-push.body.ref | split '/')[-1] }}"
+---
